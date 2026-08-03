@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { whatsappLink } from '@/lib/supabase';
+import { whatsappLink } from '@/lib/whatsapp';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);

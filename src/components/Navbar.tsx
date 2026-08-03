@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Leaf, Phone } from 'lucide-react';
-import { whatsappLink } from '@/lib/supabase';
+import { whatsappLink } from '@/lib/whatsapp';
 
 const NAV_LINKS = [
   { label: 'Home', to: '/' },

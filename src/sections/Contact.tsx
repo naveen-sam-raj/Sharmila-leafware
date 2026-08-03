@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Instagram, Clock, MessageSquare } from 'lucide-react';
 import SectionHeading from '@/components/SectionHeading';
-import { whatsappLink } from '@/lib/supabase';
+import { whatsappLink } from '@/lib/whatsapp';
 
 const CONTACTS = [
   { icon: Phone, label: 'Phone', value: '+91 99432 69660', href: 'tel:+919943269660' },

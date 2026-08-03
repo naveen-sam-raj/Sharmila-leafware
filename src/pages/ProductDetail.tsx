@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Check, Home, Globe2, ChevronRight } from 'lucide-react';
 import { fetchProductBySlug, fetchProducts } from '@/lib/api';
 import type { Product } from '@/types';
-import { whatsappProductLink } from '@/lib/supabase';
+import { whatsappProductLink } from '@/lib/whatsapp';
 import ProductCard from '@/components/ProductCard';
 
 export default function ProductDetail() {

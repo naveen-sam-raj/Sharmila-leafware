@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Leaf } from 'lucide-react';
 import type { Product } from '@/types';
-import { whatsappProductLink } from '@/lib/supabase';
+import { whatsappProductLink } from '@/lib/whatsapp';
 
 interface ProductCardProps {
   product: Product;

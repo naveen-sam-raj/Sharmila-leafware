@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Globe2, UtensilsCrossed, Hotel, Store, Boxes, ShoppingCart, Package, Tag, FileText } from 'lucide-react';
 import SectionHeading from '@/components/SectionHeading';
-import { whatsappLink } from '@/lib/supabase';
+import { whatsappLink } from '@/lib/whatsapp';
 
 const CLIENTS = [
   { icon: UtensilsCrossed, label: 'Restaurants' },

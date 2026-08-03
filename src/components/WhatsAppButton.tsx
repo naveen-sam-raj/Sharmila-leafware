@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { whatsappLink } from '@/lib/supabase';
+import { whatsappLink } from '@/lib/whatsapp';
 
 export default function WhatsAppButton() {
   const [visible, setVisible] = useState(false);

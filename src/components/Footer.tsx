@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Leaf, Phone, Mail, MapPin, Instagram, ArrowUpRight, MessageSquare } from 'lucide-react';
-import { whatsappLink } from '@/lib/supabase';
+import { whatsappLink } from '@/lib/whatsapp';
 
 const QUICK_LINKS = [
   { label: 'Home', to: '/' },
