@@ -1,22 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
-const envUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const envUrl = (import.meta.env.VITE_SUPABASE_URL as string) || '';
+const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || '';
 
 export const isSupabaseConfigured = Boolean(
   envUrl &&
   envKey &&
   !envUrl.includes('placeholder') &&
+  !envUrl.includes('dummy') &&
   envUrl.startsWith('http')
 );
 
-const supabaseUrl = isSupabaseConfigured ? envUrl : 'https://placeholder.supabase.co';
-const supabaseAnonKey = isSupabaseConfigured ? envKey : 'placeholder-anon-key';
+const supabaseUrl = isSupabaseConfigured ? envUrl : 'https://sharmilaleafware-dummy.supabase.co';
+const supabaseAnonKey = isSupabaseConfigured ? envKey : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummykey';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,
-    autoRefreshToken: true,
+    persistSession: isSupabaseConfigured,
+    autoRefreshToken: isSupabaseConfigured,
   },
 });
 
