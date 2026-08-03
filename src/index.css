@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #F5E6C8;
+    color: #334155;
+    font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+    overflow-x: hidden;
+    background-image: radial-gradient(rgba(31, 77, 54, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  }
+
+  ::selection {
+    background-color: rgba(200, 164, 93, 0.3);
+    color: #1F4D36;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F5E6C8;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(31, 77, 54, 0.25);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C8A45D;
+  }
+}
+
+@layer components {
+  /* Subtle organic leaf pattern overlay */
+  .leaf-pattern-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 C35 15 45 25 55 30 C45 35 35 45 30 55 C25 45 15 35 5 30 C15 25 25 15 30 5 Z' fill='%231F4D36' fill-opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  .gold-text {
+    @apply text-transparent bg-clip-text bg-gold-gradient;
+    background-size: 200% auto;
+  }
+
+  .forest-text {
+    color: #1F4D36;
+  }
+
+  .gold-border {
+    border: 1px solid rgba(200, 164, 93, 0.4);
+  }
+
+  .forest-border {
+    border: 1px solid rgba(31, 77, 54, 0.18);
+  }
+
+  /* Primary Button: Forest Green background (#1F4D36), White text -> Hover: Gold background (#C8A45D), Forest Green text */
+  .btn-primary-forest {
+    @apply relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 font-sans font-medium text-xs tracking-widest text-white uppercase rounded-full transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98];
+    background-color: #1F4D36;
+    border: 1px solid #1F4D36;
+  }
+  .btn-primary-forest:hover {
+    background-color: #C8A45D;
+    color: #1F4D36;
+    border-color: #C8A45D;
+  }
+
+  /* Secondary Button: Transparent background, Forest Green border (#1F4D36), Forest Green text -> Hover: Forest Green background, White text */
+  .btn-secondary-forest {
+    @apply relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 font-sans font-medium text-xs tracking-widest uppercase rounded-full transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+    background-color: transparent;
+    border: 1px solid #1F4D36;
+    color: #1F4D36;
+  }
+  .btn-secondary-forest:hover {
+    background-color: #1F4D36;
+    color: #FFFFFF;
+    border-color: #1F4D36;
+  }
+
+  /* White Product Card over Sandal Background */
+  .card-white-luxury {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(31, 77, 54, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(31, 77, 54, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-white-luxury:hover {
+    transform: translateY(-6px);
+    border-color: rgba(200, 164, 93, 0.6);
+    box-shadow: 0 16px 36px rgba(31, 77, 54, 0.12), 0 0 20px rgba(200, 164, 93, 0.15);
+  }
+
+  /* Sandal Card */
+  .card-sandal-luxury {
+    background-color: rgba(250, 243, 232, 0.85);
+    border: 1px solid rgba(31, 77, 54, 0.12);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(31, 77, 54, 0.04);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-sandal-luxury:hover {
+    transform: translateY(-5px);
+    border-color: rgba(200, 164, 93, 0.5);
+    box-shadow: 0 14px 32px rgba(31, 77, 54, 0.08);
+  }
+
+  .section-padding {
+    @apply px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32;
+  }
+
+  .heading-serif {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    color: #1F4D36;
+    font-weight: 500;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
