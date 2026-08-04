@@ -142,28 +142,18 @@ export default function Navbar() {
           mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        <div className="absolute inset-0 bg-[#FAF3E8]/98 backdrop-blur-2xl" onClick={() => setMobileOpen(false)} />
-        <div className="relative flex flex-col items-center justify-center h-full gap-6 px-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full border border-[#1F4D36]/30 flex items-center justify-center bg-[#F5E6C8]">
-              <Leaf className="w-6 h-6 text-[#1F4D36]" strokeWidth={1.8} />
-            </div>
-            <div className="flex flex-col leading-none text-left">
-              <span className="font-serif text-2xl text-[#1F4D36] font-medium">Sharmila</span>
-              <span className="font-sans text-[10px] tracking-[0.3em] text-[#C8A45D] uppercase font-bold mt-1">Leafware</span>
-            </div>
-          </div>
-
+        <div className="absolute inset-0 bg-black/90 backdrop-blur-2xl" onClick={() => setMobileOpen(false)} />
+        <div className="relative flex flex-col items-center justify-center h-full gap-3.5 px-6 pt-12 pb-8">
           {NAV_LINKS.map((link, i) => (
             <Link
               key={link.label}
               to={link.to}
               onClick={(e) => handleNavClick(e, link.to)}
-              className="font-serif text-3xl text-[#1F4D36] hover:text-[#C8A45D] transition-colors duration-300"
+              className="font-serif text-2xl font-bold text-white hover:text-[#F5C842] transition-colors duration-300 py-0.5 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
               style={{
                 opacity: mobileOpen ? 1 : 0,
-                transform: mobileOpen ? 'translateY(0)' : 'translateY(20px)',
-                transition: `opacity 0.4s ease ${i * 0.08}s, transform 0.4s ease ${i * 0.08}s, color 0.3s`,
+                transform: mobileOpen ? 'translateY(0)' : 'translateY(15px)',
+                transition: `opacity 0.35s ease ${i * 0.05}s, transform 0.35s ease ${i * 0.05}s, color 0.3s`,
               }}
             >
               {link.label}
@@ -174,7 +164,12 @@ export default function Navbar() {
             href={whatsappLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-sans text-xs font-semibold uppercase tracking-wider text-white bg-[#1F4D36] shadow-md"
+            className="mt-6 inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider text-white bg-[#17A589] hover:bg-[#138d75] shadow-lg transition-all active:scale-95"
+            style={{
+              opacity: mobileOpen ? 1 : 0,
+              transform: mobileOpen ? 'translateY(0)' : 'translateY(15px)',
+              transition: `opacity 0.35s ease ${NAV_LINKS.length * 0.05}s, transform 0.35s ease ${NAV_LINKS.length * 0.05}s`,
+            }}
           >
             Enquire Now
           </a>
