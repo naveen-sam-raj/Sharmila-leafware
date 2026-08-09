@@ -67,10 +67,10 @@ router.post('/', protect, (req, res) => {
       const b64 = Buffer.from(req.file.buffer).toString('base64');
       const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
-      // Upload directly without inline transformation array to prevent HTTP 403 transformation restriction errors
+      // Official signed upload via Cloudinary Node SDK
       const result = await cloudinary.uploader.upload(dataURI, {
-        folder: 'sharmila_leafware/products',
-        resource_type: 'auto',
+        folder: 'sharmila-leafware/products',
+        resource_type: 'image',
       });
 
       return res.json({
@@ -78,20 +78,28 @@ router.post('/', protect, (req, res) => {
         public_id: result.public_id,
       });
     } catch (uploadError) {
-      // Safe diagnostic logging (NEVER prints actual API secret)
-      console.error('[Cloudinary Upload Diagnostic Log]', {
+      // Detailed safe diagnostic error logging (NEVER logs CLOUDINARY_API_SECRET or raw Auth headers)
+      const errorDetails = {
         http_code: uploadError.http_code || uploadError.status || 500,
         message: uploadError.message,
         name: uploadError.name,
+        response_body: uploadError.response?.body || uploadError.error || null,
+        response_headers: uploadError.response?.headers || null,
+        x_cld_error: uploadError.response?.headers?.['x-cld-error'] || uploadError.x_cld_error || null,
+        error_message: uploadError.error?.message || null,
+        request_id: uploadError.request_id || uploadError.response?.headers?.['x-request-id'] || null,
         cloud_name: cloud_name || 'NOT_CONFIGURED',
         apiKeyExists: Boolean(api_key),
         apiSecretExists: Boolean(api_secret),
-      });
+      };
+
+      console.error('[Cloudinary Upload Error Safe Diagnostic Log]', errorDetails);
 
       return res.status(uploadError.http_code || 500).json({
         message: uploadError.message || 'Failed to upload image to Cloudinary.',
-        http_code: uploadError.http_code,
-        cloud_name: cloud_name || '',
+        http_code: uploadError.http_code || uploadError.status || 500,
+        x_cld_error: uploadError.response?.headers?.['x-cld-error'] || uploadError.message,
+        cloud_name,
         apiKeyExists: Boolean(api_key),
         apiSecretExists: Boolean(api_secret),
       });
