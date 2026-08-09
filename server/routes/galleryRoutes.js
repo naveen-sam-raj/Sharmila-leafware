@@ -1,6 +1,6 @@
 import express from 'express';
 import Gallery from '../models/Gallery.js';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary, { configureCloudinary } from '../config/cloudinary.js';
 import { isMongoConnected, getFallbackData, saveFallbackStorage } from '../config/db.js';
 import { protect } from '../middleware/auth.js';
 
@@ -10,7 +10,8 @@ const router = express.Router();
 const destroyCloudinaryImage = async (publicId) => {
   if (!publicId) return;
   try {
-    if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) {
+    const { cloud_name, api_key } = configureCloudinary();
+    if (cloud_name && api_key) {
       await cloudinary.uploader.destroy(publicId);
     }
   } catch (err) {

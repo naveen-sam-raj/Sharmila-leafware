@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary, { configureCloudinary } from '../config/cloudinary.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -40,8 +40,11 @@ router.post('/', protect, (req, res) => {
     }
 
     try {
+      // Re-configure Cloudinary dynamically to ensure sanitized credentials
+      const { cloud_name, api_key, api_secret } = configureCloudinary();
+
       // Check if Cloudinary credentials are configured
-      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      if (!cloud_name || !api_key || !api_secret) {
         // Fallback placeholder image mode if user has not filled Cloudinary credentials in .env
         const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
         const mockPublicId = `sharmila_leafware_${Date.now()}`;
@@ -86,7 +89,8 @@ router.delete('/', protect, async (req, res) => {
       return res.status(400).json({ message: 'Public ID is required' });
     }
 
-    if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) {
+    const { cloud_name, api_key } = configureCloudinary();
+    if (cloud_name && api_key) {
       await cloudinary.uploader.destroy(publicId);
     }
 
