@@ -1,615 +1,439 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  LayoutDashboard, Package, FolderTree, Image, LogOut, Plus, Edit3, Trash2, X, Leaf, TrendingUp, Grid, Save,
+  ShoppingBag,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  PlusCircle,
+  ArrowRight,
+  CreditCard,
+  Calendar,
+  Layers,
+  FileText,
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import {
-  fetchProducts, fetchCategories, fetchGallery,
-  createProduct, updateProduct, deleteProduct,
-  createCategory, updateCategory, deleteCategory,
-  createGalleryItem, deleteGalleryItem,
-} from '@/lib/api';
-import type { Product, Category, GalleryItem } from '@/types';
-import { GALLERY_CATEGORIES } from '@/types';
+import { fetchDashboardStats } from '@/lib/api';
+import { formatIndianCurrency } from '@/lib/numberToWords';
+import type { DashboardStats } from '@/types';
 
-type Tab = 'overview' | 'products' | 'categories' | 'gallery';
+const DATE_RANGE_OPTIONS = [
+  { value: 'today', label: 'Today' },
+  { value: 'yesterday', label: 'Yesterday' },
+  { value: 'this_week', label: 'This Week' },
+  { value: 'this_month', label: 'This Month' },
+  { value: 'last_month', label: 'Last Month' },
+  { value: 'this_year', label: 'This Year' },
+  { value: 'custom', label: 'Custom Range' },
+];
 
 export default function AdminDashboard() {
-  const { session, loading, signOut } = useAuth();
-  const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>('overview');
+  const [range, setRange] = useState('this_month');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [gallery, setGallery] = useState<GalleryItem[]>([]);
-  const [dataLoading, setDataLoading] = useState(true);
-
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [showGalleryModal, setShowGalleryModal] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !session) navigate('/admin');
-  }, [loading, session, navigate]);
-
-  const loadAll = async () => {
+  const loadMetrics = async () => {
+    setLoading(true);
     try {
-      const [p, c, g] = await Promise.all([fetchProducts(), fetchCategories(), fetchGallery()]);
-      setProducts(p);
-      setCategories(c);
-      setGallery(g);
-    } catch {
-      // ignore
+      const data = await fetchDashboardStats(range, startDate, endDate);
+      setStats(data);
+    } catch (err) {
+      console.error('Error loading dashboard stats:', err);
     } finally {
-      setDataLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (session) loadAll();
-  }, [session]);
-
-  if (loading || !session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-2 border-luxury-gold/30 border-t-luxury-gold animate-spin" />
-      </div>
-    );
-  }
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/admin');
-  };
-
-  const stats = [
-    { icon: Package, label: 'Products', value: products.length },
-    { icon: FolderTree, label: 'Categories', value: categories.length },
-    { icon: Image, label: 'Gallery Images', value: gallery.length },
-  ];
+    loadMetrics();
+  }, [range, startDate, endDate]);
 
   return (
-    <div className="min-h-screen bg-luxury-bg flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-luxury-surface border-r border-luxury-green/15 flex flex-col fixed h-full z-30">
-        <div className="p-6 flex items-center gap-3 border-b border-luxury-gold/15">
-          <div className="w-10 h-10 rounded-full green-border flex items-center justify-center">
-            <Leaf className="w-5 h-5 text-luxury-green" strokeWidth={1.5} />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="font-serif text-lg text-luxury-ink">Sharmila</span>
-            <span className="font-sans text-[9px] tracking-[0.3em] text-luxury-gold uppercase">Admin Panel</span>
-          </div>
+    <div className="space-y-8">
+      {/* Top Header Bar & Date Filter */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Business Dashboard</h1>
+          <p className="font-sans text-xs text-[#64748B] mt-0.5">
+            Real-time financial tracking, orders, received cash flow & operational expense metrics
+          </p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
-          {([
-            { id: 'overview', icon: LayoutDashboard, label: 'Dashboard' },
-            { id: 'products', icon: Package, label: 'Products' },
-            { id: 'categories', icon: FolderTree, label: 'Categories' },
-            { id: 'gallery', icon: Image, label: 'Gallery' },
-          ] as { id: Tab; icon: typeof LayoutDashboard; label: string }[]).map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setTab(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm transition-all duration-300 ${
-                tab === item.id
-                  ? 'bg-luxury-green/10 text-luxury-green border border-luxury-green/20'
-                  : 'text-luxury-ink-muted hover:bg-white/[0.03]'
-              }`}
+        {/* Date Filter Bar */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-[#1F4D36]/15 shadow-xs">
+            <Calendar className="w-4 h-4 text-[#1F4D36]" />
+            <select
+              value={range}
+              onChange={(e) => setRange(e.target.value)}
+              className="font-sans text-xs font-semibold text-[#1F4D36] bg-transparent focus:outline-none cursor-pointer"
             >
-              <item.icon className="w-5 h-5" strokeWidth={1.5} />
-              {item.label}
-            </button>
-          ))}
-        </nav>
+              {DATE_RANGE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="p-4 border-t border-luxury-gold/15">
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm text-red-400/70 hover:text-red-400 hover:bg-red-500/5 transition-all"
+          {range === 'custom' && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="px-3 py-1.5 rounded-xl bg-white border border-[#1F4D36]/15 text-xs font-sans"
+              />
+              <span className="text-xs text-slate-400">to</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="px-3 py-1.5 rounded-xl bg-white border border-[#1F4D36]/15 text-xs font-sans"
+              />
+            </div>
+          )}
+
+          <Link
+            to="/admin/orders/add"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-sans text-xs font-semibold text-white bg-[#1F4D36] hover:bg-[#163827] transition-all shadow-sm"
           >
-            <LogOut className="w-5 h-5" strokeWidth={1.5} />
-            Sign Out
-          </button>
+            <PlusCircle className="w-4 h-4" /> + Create Order
+          </Link>
         </div>
-      </aside>
+      </div>
 
-      {/* Main content */}
-      <main className="flex-1 ml-64 p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+      {/* 6 Financial Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        {/* Card 1: TOTAL ORDERS */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-5 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-xs flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#1F4D36]/10 text-[#1F4D36] flex items-center justify-center">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F4D36] bg-[#FAF3E8] px-2 py-0.5 rounded-full">
+              Volume
+            </span>
+          </div>
           <div>
-            <h1 className="font-serif text-3xl text-luxury-ink capitalize">{tab}</h1>
-            <p className="font-sans text-sm text-luxury-ink-muted/70 mt-1">
-              {tab === 'overview' && 'Welcome back to your dashboard.'}
-              {tab === 'products' && 'Manage your product catalogue.'}
-              {tab === 'categories' && 'Organise your product categories.'}
-              {tab === 'gallery' && 'Upload and manage gallery images.'}
+            <h3 className="font-sans text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Total Orders</h3>
+            <p className="font-sans text-3xl font-semibold text-[#1F4D36] mt-1">
+              {loading ? '...' : stats?.totalOrders || 0}
             </p>
           </div>
-          {(tab === 'products' || tab === 'categories' || tab === 'gallery') && (
-            <button
-              onClick={() => {
-                if (tab === 'products') { setEditingProduct(null); setShowProductModal(true); }
-                if (tab === 'categories') { setEditingCategory(null); setShowCategoryModal(true); }
-                if (tab === 'gallery') setShowGalleryModal(true);
-              }}
-              className="btn-gold"
+        </motion.div>
+
+        {/* Card 2: TOTAL ORDER VALUE */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="p-5 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-xs flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#C8A45D]/15 text-[#1F4D36] flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-[#1F4D36]" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F4D36] bg-[#FAF3E8] px-2 py-0.5 rounded-full">
+              Gross
+            </span>
+          </div>
+          <div>
+            <h3 className="font-sans text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Total Order Value</h3>
+            <p className="font-sans text-2xl font-semibold text-[#1F4D36] mt-1 truncate">
+              {loading ? '...' : formatIndianCurrency(stats?.totalOrderValue || 0)}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Card 3: TOTAL PAID */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="p-5 rounded-[20px] bg-white border border-emerald-200 shadow-xs flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
+              Cash In
+            </span>
+          </div>
+          <div>
+            <h3 className="font-sans text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Total Paid</h3>
+            <p className="font-sans text-2xl font-semibold text-emerald-700 mt-1 truncate">
+              {loading ? '...' : formatIndianCurrency(stats?.totalPaid || 0)}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Card 4: TOTAL PENDING */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="p-5 rounded-[20px] bg-white border border-amber-200 shadow-xs flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+              <Clock className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full">
+              Due
+            </span>
+          </div>
+          <div>
+            <h3 className="font-sans text-[11px] font-bold text-amber-800 uppercase tracking-wider">Total Pending</h3>
+            <p className="font-sans text-2xl font-semibold text-amber-800 mt-1 truncate">
+              {loading ? '...' : formatIndianCurrency(stats?.totalPending || 0)}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Card 5: TOTAL EXPENSES */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="p-5 rounded-[20px] bg-white border border-red-200 shadow-xs flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
+              <TrendingDown className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-red-800 bg-red-50 px-2 py-0.5 rounded-full">
+              Cost
+            </span>
+          </div>
+          <div>
+            <h3 className="font-sans text-[11px] font-bold text-red-800 uppercase tracking-wider">Total Expenses</h3>
+            <p className="font-sans text-2xl font-semibold text-red-700 mt-1 truncate">
+              {loading ? '...' : formatIndianCurrency(stats?.totalExpenses || 0)}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Card 6: NET AMOUNT (Total Paid - Total Expenses) */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="p-5 rounded-[20px] bg-[#1F4D36] text-white shadow-md flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-white/10 text-[#C8A45D] flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#C8A45D] bg-white/10 px-2 py-0.5 rounded-full">
+              Net Received
+            </span>
+          </div>
+          <div>
+            <h3 className="font-sans text-[11px] font-bold text-emerald-100/80 uppercase tracking-wider">Net Amount</h3>
+            <p className="font-sans text-2xl font-semibold text-white mt-1 truncate">
+              {loading ? '...' : formatIndianCurrency(stats?.netAmount || 0)}
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Visual Analytics & Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Paid vs Pending Breakdown */}
+        <div className="p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm">
+          <h3 className="font-serif text-lg font-bold text-[#1F4D36] mb-4 pb-2 border-b border-slate-100">
+            Payment Settlement Ratio
+          </h3>
+
+          <div className="space-y-4 font-sans">
+            <div>
+              <div className="flex justify-between text-xs font-semibold mb-1.5">
+                <span className="text-emerald-800">Received (Paid):</span>
+                <span className="text-emerald-800 font-bold">{formatIndianCurrency(stats?.totalPaid || 0)}</span>
+              </div>
+              <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full bg-emerald-600 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${
+                      stats?.totalOrderValue
+                        ? Math.min(100, Math.round((stats.totalPaid / stats.totalOrderValue) * 100))
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-semibold mb-1.5">
+                <span className="text-amber-800">Outstanding (Pending):</span>
+                <span className="text-amber-800 font-bold">{formatIndianCurrency(stats?.totalPending || 0)}</span>
+              </div>
+              <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${
+                      stats?.totalOrderValue
+                        ? Math.min(100, Math.round((stats.totalPending / stats.totalOrderValue) * 100))
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 p-3 rounded-xl bg-[#FAF3E8] text-xs text-[#1F4D36]">
+              <span className="font-semibold block">Calculation Formula:</span>
+              <span className="text-[11px] text-[#64748B]">
+                Net Amount (₹{(stats?.netAmount || 0).toLocaleString('en-IN')}) = Total Received (₹
+                {(stats?.totalPaid || 0).toLocaleString('en-IN')}) - Total Expenses (₹
+                {(stats?.totalExpenses || 0).toLocaleString('en-IN')})
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Expenses by Category Breakdown */}
+        <div className="lg:col-span-2 p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+            <h3 className="font-serif text-lg font-bold text-[#1F4D36]">Expenses by Category</h3>
+            <Link
+              to="/admin/expenses"
+              className="text-xs font-semibold text-[#1F4D36] hover:text-[#C8A45D] flex items-center gap-1"
             >
-              <Plus className="w-4 h-4" />
-              {tab === 'products' ? 'Add Product' : tab === 'categories' ? 'Add Category' : 'Add Image'}
-            </button>
+              View All Expenses <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {!stats?.chartExpensesByCategory || stats.chartExpensesByCategory.length === 0 ? (
+            <div className="py-8 text-center text-xs text-[#64748B]">No expenses recorded for this period.</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans">
+              {stats.chartExpensesByCategory.map((c) => (
+                <div key={c.category} className="p-3.5 rounded-xl bg-[#FAF3E8]/40 border border-[#1F4D36]/10">
+                  <span className="font-sans text-[11px] font-semibold text-[#64748B] uppercase block">
+                    {c.category}
+                  </span>
+                  <span className="font-sans text-lg font-semibold text-red-700 block mt-0.5">
+                    {formatIndianCurrency(c.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Tables Section: Recent Orders & Recent Payments */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Orders (Latest 10) */}
+        <div className="lg:col-span-2 p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5 text-[#1F4D36]" />
+              <h3 className="font-serif text-xl font-bold text-[#1F4D36]">Recent Customer Orders</h3>
+            </div>
+            <Link
+              to="/admin/orders"
+              className="text-xs font-semibold text-[#1F4D36] hover:text-[#C8A45D] flex items-center gap-1"
+            >
+              View All Orders <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="py-12 text-center text-xs text-[#64748B]">Loading orders...</div>
+          ) : !stats?.recentOrders || stats.recentOrders.length === 0 ? (
+            <div className="py-12 text-center text-xs text-[#64748B]">No orders created yet.</div>
+          ) : (
+            <div className="overflow-x-auto font-sans">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#FAF3E8]/60 text-[10px] font-bold uppercase tracking-wider text-[#1F4D36] border-b border-[#1F4D36]/10">
+                    <th className="py-2.5 px-3">Order ID</th>
+                    <th className="py-2.5 px-3">Customer</th>
+                    <th className="py-2.5 px-3">Amount</th>
+                    <th className="py-2.5 px-3">Paid</th>
+                    <th className="py-2.5 px-3">Balance</th>
+                    <th className="py-2.5 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs">
+                  {stats.recentOrders.map((ord) => (
+                    <tr key={ord._id || ord.id || ord.orderId} className="hover:bg-[#FAF3E8]/20">
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#1F4D36]">{ord.orderId}</td>
+                      <td className="py-2.5 px-3 font-semibold text-[#1F4D36]">{ord.customerName}</td>
+                      <td className="py-2.5 px-3 font-semibold">{formatIndianCurrency(ord.grandTotal)}</td>
+                      <td className="py-2.5 px-3 text-emerald-700 font-semibold">{formatIndianCurrency(ord.paidAmount)}</td>
+                      <td className="py-2.5 px-3 text-amber-800 font-semibold">
+                        {formatIndianCurrency(ord.balanceAmount)}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#FAF3E8] text-[#1F4D36] border border-[#1F4D36]/15">
+                          {ord.paymentStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
-        {dataLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-10 h-10 rounded-full border-2 border-luxury-gold/30 border-t-luxury-gold animate-spin" />
+        {/* Recent Payments (Latest 10) */}
+        <div className="p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-[#1F4D36]" />
+              <h3 className="font-serif text-xl font-bold text-[#1F4D36]">Recent Payments</h3>
+            </div>
+            <Link
+              to="/admin/payments"
+              className="text-xs font-semibold text-[#1F4D36] hover:text-[#C8A45D]"
+            >
+              Audit Log
+            </Link>
           </div>
-        ) : (
-          <>
-            {/* OVERVIEW */}
-            {tab === 'overview' && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  {stats.map((s) => (
-                    <div key={s.label} className="p-6 rounded-2xl glass-gold">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-xl green-border flex items-center justify-center">
-                          <s.icon className="w-6 h-6 text-luxury-green" strokeWidth={1.5} />
-                        </div>
-                        <TrendingUp className="w-5 h-5 text-luxury-green/60" />
-                      </div>
-                      <p className="font-serif text-4xl text-luxury-ink">{s.value}</p>
-                      <p className="font-sans text-sm text-luxury-ink-muted/70 mt-1">{s.label}</p>
-                    </div>
-                  ))}
+
+          {loading ? (
+            <div className="py-12 text-center text-xs text-[#64748B]">Loading payments...</div>
+          ) : !stats?.recentPayments || stats.recentPayments.length === 0 ? (
+            <div className="py-12 text-center text-xs text-[#64748B]">No payment logs recorded yet.</div>
+          ) : (
+            <div className="space-y-3 font-sans">
+              {stats.recentPayments.map((p) => (
+                <div
+                  key={p._id || p.id || p.paymentId}
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#FAF3E8]/30 border border-[#1F4D36]/10"
+                >
+                  <div>
+                    <span className="font-mono text-xs font-bold text-[#1F4D36] block">{p.orderId}</span>
+                    <span className="font-sans text-[11px] text-[#64748B] block">
+                      {p.customerName || 'Customer'} • {p.paymentMethod}
+                    </span>
+                  </div>
+                  <span className="font-sans text-sm font-semibold text-emerald-700">
+                    +{formatIndianCurrency(p.amount)}
+                  </span>
                 </div>
-
-                <div className="p-6 rounded-2xl glass">
-                  <h3 className="font-serif text-xl text-luxury-ink mb-4">Recent Products</h3>
-                  <div className="space-y-3">
-                    {products.slice(0, 5).map((p) => (
-                      <div key={p.id} className="flex items-center gap-4 p-3 rounded-xl glass hover:gold-border transition-all">
-                        <img src={p.image_url ?? ''} alt={p.name} className="w-12 h-12 rounded-lg object-cover" />
-                        <div className="flex-1">
-                          <p className="font-sans text-sm text-luxury-ink">{p.name}</p>
-                          <p className="font-sans text-xs text-luxury-ink-muted/70">{p.sizes.length} sizes</p>
-                        </div>
-                        <span className="font-sans text-xs text-luxury-green/60">{p.category?.name ?? '—'}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* PRODUCTS */}
-            {tab === 'products' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((p) => (
-                  <div key={p.id} className="group rounded-2xl glass-gold overflow-hidden">
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <img src={p.image_url ?? ''} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-serif text-lg text-luxury-ink mb-1">{p.name}</h3>
-                      <p className="font-sans text-xs text-luxury-gold/60 mb-3">{p.category?.name ?? 'Uncategorised'}</p>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => { setEditingProduct(p); setShowProductModal(true); }}
-                          className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg glass text-luxury-gold text-xs hover:gold-border transition-all"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" /> Edit
-                        </button>
-                        <button
-                          onClick={async () => {
-                            if (confirm(`Delete "${p.name}"?`)) {
-                              await deleteProduct(p.id);
-                              loadAll();
-                            }
-                          }}
-                          className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg glass text-red-400/70 text-xs hover:border-red-400/30 transition-all"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" /> Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* CATEGORIES */}
-            {tab === 'categories' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories.map((c) => (
-                  <div key={c.id} className="p-6 rounded-2xl glass-gold">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl gold-border flex items-center justify-center">
-                        <Grid className="w-5 h-5 text-luxury-gold" strokeWidth={1.5} />
-                      </div>
-                      <h3 className="font-serif text-lg text-luxury-ink">{c.name}</h3>
-                    </div>
-                    <p className="font-sans text-sm text-luxury-ink-muted mb-4">{c.description}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => { setEditingCategory(c); setShowCategoryModal(true); }}
-                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg glass text-luxury-gold text-xs hover:gold-border transition-all"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" /> Edit
-                      </button>
-                      <button
-                        onClick={async () => {
-                          if (confirm(`Delete category "${c.name}"?`)) {
-                            await deleteCategory(c.id);
-                            loadAll();
-                          }
-                        }}
-                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg glass text-red-400/70 text-xs hover:border-red-400/30 transition-all"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* GALLERY */}
-            {tab === 'gallery' && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {gallery.map((g) => (
-                  <div key={g.id} className="group relative rounded-2xl glass-gold overflow-hidden">
-                    <div className="aspect-square overflow-hidden">
-                      <img src={g.image_url} alt={g.title} className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                    <div className="p-3">
-                      <p className="font-sans text-sm text-luxury-ink truncate">{g.title}</p>
-                      <p className="font-sans text-[10px] text-luxury-gold/60 uppercase tracking-wide">{g.category}</p>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        if (confirm(`Delete "${g.title}"?`)) {
-                          await deleteGalleryItem(g.id);
-                          loadAll();
-                        }
-                      }}
-                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 border border-red-400/30 flex items-center justify-center text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </main>
-
-      {/* Product Modal */}
-      {showProductModal && (
-        <ProductModal
-          product={editingProduct}
-          categories={categories}
-          onClose={() => setShowProductModal(false)}
-          onSaved={() => { setShowProductModal(false); loadAll(); }}
-        />
-      )}
-
-      {/* Category Modal */}
-      {showCategoryModal && (
-        <CategoryModal
-          category={editingCategory}
-          onClose={() => setShowCategoryModal(false)}
-          onSaved={() => { setShowCategoryModal(false); loadAll(); }}
-        />
-      )}
-
-      {/* Gallery Modal */}
-      {showGalleryModal && (
-        <GalleryModal
-          onClose={() => setShowGalleryModal(false)}
-          onSaved={() => { setShowGalleryModal(false); loadAll(); }}
-        />
-      )}
-    </div>
-  );
-}
-
-// ===== Product Modal =====
-function ProductModal({ product, categories, onClose, onSaved }: {
-  product: Product | null;
-  categories: Category[];
-  onClose: () => void;
-  onSaved: () => void;
-}) {
-  const [form, setForm] = useState({
-    name: product?.name ?? '',
-    slug: product?.slug ?? '',
-    category_id: product?.category_id ?? categories[0]?.id ?? '',
-    description: product?.description ?? '',
-    image_url: product?.image_url ?? '',
-    gallery_urls: (product?.gallery_urls ?? []).join('\n'),
-    sizes: (product?.sizes ?? []).join(', '),
-    features: (product?.features ?? []).join('\n'),
-    domestic_quality: product?.domestic_quality ?? '',
-    export_quality: product?.export_quality ?? '',
-    sort_order: product?.sort_order ?? 0,
-  });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    try {
-      const payload = {
-        name: form.name,
-        slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
-        category_id: form.category_id || null,
-        description: form.description,
-        image_url: form.image_url,
-        gallery_urls: form.gallery_urls.split('\n').map((s) => s.trim()).filter(Boolean),
-        sizes: form.sizes.split(',').map((s) => s.trim()).filter(Boolean),
-        features: form.features.split('\n').map((s) => s.trim()).filter(Boolean),
-        domestic_quality: form.domestic_quality,
-        export_quality: form.export_quality,
-        sort_order: Number(form.sort_order) || 0,
-      };
-      if (product) {
-        await updateProduct(product.id, payload);
-      } else {
-        await createProduct(payload);
-      }
-      onSaved();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save product');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Modal title={product ? 'Edit Product' : 'Add Product'} onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required />
-          <Field label="Slug" value={form.slug} onChange={(v) => setForm({ ...form, slug: v })} placeholder="auto-generated" />
+              ))}
+            </div>
+          )}
         </div>
-
-        <div>
-          <label className="block font-sans text-xs tracking-wide text-luxury-gold/70 uppercase mb-2">Category</label>
-          <select
-            value={form.category_id}
-            onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-white/50 border border-luxury-gold/20 text-luxury-ink font-sans text-sm focus:border-luxury-gold/50 focus:outline-none"
-          >
-            <option value="">Uncategorised</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <Field label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} textarea />
-
-        <Field label="Main Image URL" value={form.image_url} onChange={(v) => setForm({ ...form, image_url: v })} />
-
-        <Field label="Gallery URLs (one per line)" value={form.gallery_urls} onChange={(v) => setForm({ ...form, gallery_urls: v })} textarea />
-
-        <Field label="Sizes (comma separated)" value={form.sizes} onChange={(v) => setForm({ ...form, sizes: v })} />
-
-        <Field label="Features (one per line)" value={form.features} onChange={(v) => setForm({ ...form, features: v })} textarea />
-
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Domestic Quality" value={form.domestic_quality} onChange={(v) => setForm({ ...form, domestic_quality: v })} textarea />
-          <Field label="Export Quality" value={form.export_quality} onChange={(v) => setForm({ ...form, export_quality: v })} textarea />
-        </div>
-
-        <Field label="Sort Order" value={String(form.sort_order)} onChange={(v) => setForm({ ...form, sort_order: Number(v) })} type="number" />
-
-        {error && <p className="font-sans text-sm text-red-400/80">{error}</p>}
-
-        <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 px-4 py-3 rounded-xl glass text-luxury-ink-muted font-sans text-sm hover:gold-border transition-all">Cancel</button>
-          <button type="submit" disabled={saving} className="flex-1 btn-gold disabled:opacity-50">
-            <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-// ===== Category Modal =====
-function CategoryModal({ category, onClose, onSaved }: {
-  category: Category | null;
-  onClose: () => void;
-  onSaved: () => void;
-}) {
-  const [form, setForm] = useState({
-    name: category?.name ?? '',
-    slug: category?.slug ?? '',
-    description: category?.description ?? '',
-    icon: category?.icon ?? 'CircleDot',
-    sort_order: category?.sort_order ?? 0,
-  });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    try {
-      const payload = {
-        name: form.name,
-        slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
-        description: form.description,
-        icon: form.icon,
-        sort_order: Number(form.sort_order) || 0,
-      };
-      if (category) {
-        await updateCategory(category.id, payload);
-      } else {
-        await createCategory(payload);
-      }
-      onSaved();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save category');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Modal title={category ? 'Edit Category' : 'Add Category'} onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Field label="Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required />
-        <Field label="Slug" value={form.slug} onChange={(v) => setForm({ ...form, slug: v })} placeholder="auto-generated" />
-        <Field label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} textarea />
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Icon (lucide name)" value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} />
-          <Field label="Sort Order" value={String(form.sort_order)} onChange={(v) => setForm({ ...form, sort_order: Number(v) })} type="number" />
-        </div>
-
-        {error && <p className="font-sans text-sm text-red-400/80">{error}</p>}
-
-        <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 px-4 py-3 rounded-xl glass text-luxury-ink-muted font-sans text-sm hover:gold-border transition-all">Cancel</button>
-          <button type="submit" disabled={saving} className="flex-1 btn-gold disabled:opacity-50">
-            <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-// ===== Gallery Modal =====
-function GalleryModal({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
-  const [form, setForm] = useState({
-    title: '',
-    category: GALLERY_CATEGORIES[0] as string,
-    image_url: '',
-    sort_order: 0,
-  });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    try {
-      await createGalleryItem({
-        title: form.title,
-        category: form.category,
-        image_url: form.image_url,
-        sort_order: Number(form.sort_order) || 0,
-      });
-      onSaved();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save image');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Modal title="Add Gallery Image" onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Field label="Title" value={form.title} onChange={(v) => setForm({ ...form, title: v })} required />
-        <div>
-          <label className="block font-sans text-xs tracking-wide text-luxury-gold/70 uppercase mb-2">Category</label>
-          <select
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-white/50 border border-luxury-gold/20 text-luxury-ink font-sans text-sm focus:border-luxury-gold/50 focus:outline-none"
-          >
-            {GALLERY_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-        <Field label="Image URL" value={form.image_url} onChange={(v) => setForm({ ...form, image_url: v })} required />
-        <Field label="Sort Order" value={String(form.sort_order)} onChange={(v) => setForm({ ...form, sort_order: Number(v) })} type="number" />
-
-        {error && <p className="font-sans text-sm text-red-400/80">{error}</p>}
-
-        <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 px-4 py-3 rounded-xl glass text-luxury-ink-muted font-sans text-sm hover:gold-border transition-all">Cancel</button>
-          <button type="submit" disabled={saving} className="flex-1 btn-gold disabled:opacity-50">
-            <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-// ===== Shared Modal =====
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm" onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-3xl glass-gold"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-serif text-2xl text-luxury-ink">{title}</h2>
-          <button onClick={onClose} className="w-10 h-10 rounded-full glass flex items-center justify-center text-luxury-ink-muted hover:text-luxury-gold transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        {children}
-      </motion.div>
-    </div>
-  );
-}
-
-// ===== Shared Field =====
-function Field({ label, value, onChange, required, placeholder, textarea, type = 'text' }: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  required?: boolean;
-  placeholder?: string;
-  textarea?: boolean;
-  type?: string;
-}) {
-  return (
-    <div>
-      <label className="block font-sans text-xs tracking-wide text-luxury-gold/70 uppercase mb-2">{label}</label>
-      {textarea ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          placeholder={placeholder}
-          rows={3}
-          className="w-full px-4 py-3 rounded-xl bg-white/50 border border-luxury-gold/20 text-luxury-ink font-sans text-sm focus:border-luxury-gold/50 focus:outline-none focus:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all resize-none"
-        />
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 rounded-xl bg-white/50 border border-luxury-gold/20 text-luxury-ink font-sans text-sm focus:border-luxury-gold/50 focus:outline-none focus:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all"
-        />
-      )}
+      </div>
     </div>
   );
 }
