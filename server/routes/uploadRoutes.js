@@ -39,9 +39,16 @@ router.post('/', protect, (req, res) => {
       return res.status(400).json({ message: 'Please select an image file to upload.' });
     }
 
+    let cloud_name = '';
+    let api_key = '';
+    let api_secret = '';
+
     try {
       // Re-configure Cloudinary dynamically to ensure sanitized credentials
-      const { cloud_name, api_key, api_secret } = configureCloudinary();
+      const config = configureCloudinary();
+      cloud_name = config.cloud_name;
+      api_key = config.api_key;
+      api_secret = config.api_secret;
 
       // Check if Cloudinary credentials are configured
       if (!cloud_name || !api_key || !api_secret) {
@@ -60,11 +67,10 @@ router.post('/', protect, (req, res) => {
       const b64 = Buffer.from(req.file.buffer).toString('base64');
       const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
+      // Upload directly without inline transformation array to prevent HTTP 403 transformation restriction errors
       const result = await cloudinary.uploader.upload(dataURI, {
         folder: 'sharmila_leafware/products',
-        transformation: [
-          { width: 1200, height: 1200, crop: 'limit', quality: 'auto', fetch_format: 'auto' },
-        ],
+        resource_type: 'auto',
       });
 
       return res.json({
@@ -72,9 +78,22 @@ router.post('/', protect, (req, res) => {
         public_id: result.public_id,
       });
     } catch (uploadError) {
-      console.error('Cloudinary upload error:', uploadError);
-      return res.status(500).json({
+      // Safe diagnostic logging (NEVER prints actual API secret)
+      console.error('[Cloudinary Upload Diagnostic Log]', {
+        http_code: uploadError.http_code || uploadError.status || 500,
+        message: uploadError.message,
+        name: uploadError.name,
+        cloud_name: cloud_name || 'NOT_CONFIGURED',
+        apiKeyExists: Boolean(api_key),
+        apiSecretExists: Boolean(api_secret),
+      });
+
+      return res.status(uploadError.http_code || 500).json({
         message: uploadError.message || 'Failed to upload image to Cloudinary.',
+        http_code: uploadError.http_code,
+        cloud_name: cloud_name || '',
+        apiKeyExists: Boolean(api_key),
+        apiSecretExists: Boolean(api_secret),
       });
     }
   });
