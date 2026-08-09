@@ -16,13 +16,13 @@ export async function connectDB() {
   try {
     mongoose.set('strictQuery', false);
     await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 10000,
     });
     isMongoConnected = true;
-    console.log(`[MongoDB] Connected successfully to ${mongoURI}`);
+    console.log(`[MongoDB Atlas] Connected successfully to Cloud Database`);
   } catch (err) {
     isMongoConnected = false;
-    console.warn(`[MongoDB] Could not connect to MongoDB (${err.message}). Using local datastore fallback.`);
+    console.warn(`[MongoDB] Could not connect to MongoDB Atlas (${err.message}). Using local datastore fallback.`);
     initFallbackStorage();
   }
 }
@@ -30,7 +30,12 @@ export async function connectDB() {
 let fallbackData = {
   users: [],
   categories: [],
-  products: []
+  products: [],
+  gallery: [],
+  orders: [],
+  payments: [],
+  expenses: [],
+  settings: null,
 };
 
 function initFallbackStorage() {
