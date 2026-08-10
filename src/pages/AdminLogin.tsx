@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight, ArrowLeft, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import SEO from '@/components/SEO';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AdminLogin() {
@@ -35,6 +36,7 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#FAF3E8]">
+      <SEO title="Admin Login | Sharmila Leafware" noindex={true} />
       {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1F4D36]/5 blur-[140px] rounded-full pointer-events-none" />
 

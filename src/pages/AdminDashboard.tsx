@@ -53,24 +53,24 @@ export default function AdminDashboard() {
   }, [range, startDate, endDate]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Top Header Bar & Date Filter */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-[#174B38]/10 shadow-xs">
         <div>
-          <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Business Dashboard</h1>
-          <p className="font-sans text-xs text-[#64748B] mt-0.5">
+          <h1 className="font-serif text-2xl sm:text-3xl text-[#174B38] font-bold">Business Dashboard</h1>
+          <p className="font-sans text-xs text-[#6D7C58] mt-1">
             Real-time financial tracking, orders, received cash flow & operational expense metrics
           </p>
         </div>
 
         {/* Date Filter Bar */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-[#1F4D36]/15 shadow-xs">
-            <Calendar className="w-4 h-4 text-[#1F4D36]" />
+          <div className="flex items-center gap-2 bg-[#FAF3E8] px-3.5 py-2 rounded-xl border border-[#174B38]/15 shadow-xs">
+            <Calendar className="w-4 h-4 text-[#174B38]" />
             <select
               value={range}
               onChange={(e) => setRange(e.target.value)}
-              className="font-sans text-xs font-semibold text-[#1F4D36] bg-transparent focus:outline-none cursor-pointer"
+              className="font-sans text-xs font-semibold text-[#174B38] bg-transparent focus:outline-none cursor-pointer"
             >
               {DATE_RANGE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -86,23 +86,23 @@ export default function AdminDashboard() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-white border border-[#1F4D36]/15 text-xs font-sans"
+                className="px-3 py-1.5 rounded-xl bg-white border border-[#174B38]/15 text-xs font-sans text-[#1E2924]"
               />
-              <span className="text-xs text-slate-400">to</span>
+              <span className="text-xs text-[#6D7C58]">to</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-white border border-[#1F4D36]/15 text-xs font-sans"
+                className="px-3 py-1.5 rounded-xl bg-white border border-[#174B38]/15 text-xs font-sans text-[#1E2924]"
               />
             </div>
           )}
 
           <Link
             to="/admin/orders/add"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-sans text-xs font-semibold text-white bg-[#1F4D36] hover:bg-[#163827] transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-sans text-xs font-semibold text-white bg-[#174B38] hover:bg-[#123B2C] transition-all shadow-xs"
           >
-            <PlusCircle className="w-4 h-4" /> + Create Order
+            <PlusCircle className="w-4 h-4" /> Create Order
           </Link>
         </div>
       </div>

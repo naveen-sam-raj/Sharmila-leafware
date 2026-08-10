@@ -147,86 +147,11 @@ const DEFAULT_GALLERY = [
   }
 ];
 
-// Initial Default Orders
-const DEFAULT_ORDERS = [
-  {
-    orderId: 'SLW-2026-0001',
-    invoiceNumber: 'INV-2026-0001',
-    customerName: 'Suresh Kumar',
-    companyName: 'Green Earth Catering Services',
-    phone: '9845012345',
-    whatsapp: '9845012345',
-    email: 'suresh@greenearthcatering.com',
-    address: 'No. 45, MG Road, Indiranagar, Bengaluru, Karnataka - 560038',
-    gstNumber: '29ABCDE1234F1Z5',
-    items: [
-      { productName: '10 Inch Round Areca Leaf Plate', size: '10 Inch', quantity: 500, unitPrice: 12, total: 6000 },
-      { productName: '9 Inch Square Areca Leaf Plate', size: '9 Inch', quantity: 300, unitPrice: 10, total: 3000 },
-      { productName: '6 Inch Deep Soup & Salad Bowl', size: '6 Inch', quantity: 200, unitPrice: 7, total: 1400 },
-    ],
-    subtotal: 10400,
-    discount: 400,
-    transportCharge: 300,
-    grandTotal: 10300,
-    paidAmount: 10300,
-    balanceAmount: 0,
-    paymentStatus: 'PAID',
-    orderStatus: 'DELIVERED',
-    notes: 'Urgent event delivery. All items inspected.',
-  },
-  {
-    orderId: 'SLW-2026-0002',
-    invoiceNumber: 'INV-2026-0002',
-    customerName: 'Anitha Ramesh',
-    companyName: 'Organic Weddings & Events',
-    phone: '9443218765',
-    whatsapp: '9443218765',
-    email: 'anitha@organicweddings.in',
-    address: '12th Cross, RS Puram, Coimbatore, Tamil Nadu - 641002',
-    gstNumber: '33XYZPA9876B1Z2',
-    items: [
-      { productName: '4-Compartment Buffet Serving Tray', size: '12x10 Inch', quantity: 1000, unitPrice: 18, total: 18000 },
-      { productName: '10 Inch Round Areca Leaf Plate', size: '10 Inch', quantity: 1000, unitPrice: 12, total: 12000 },
-    ],
-    subtotal: 30000,
-    discount: 1000,
-    transportCharge: 800,
-    grandTotal: 29800,
-    paidAmount: 15000,
-    balanceAmount: 14800,
-    paymentStatus: 'PARTIALLY_PAID',
-    orderStatus: 'PROCESSING',
-    notes: 'Advance paid. Remaining balance on delivery.',
-  },
-];
+// Initial Default Orders (Empty for clean state)
+const DEFAULT_ORDERS = [];
 
-// Initial Default Expenses
-const DEFAULT_EXPENSES = [
-  {
-    expenseDate: new Date(),
-    category: 'Transport',
-    description: 'Raw leaf freight transport from Shimoga farm to factory',
-    amount: 8500,
-    paymentMethod: 'UPI',
-    notes: 'Truck freight charge',
-  },
-  {
-    expenseDate: new Date(),
-    category: 'Packaging',
-    description: 'Shrink wrap film rolls and corrugated export cartons',
-    amount: 4200,
-    paymentMethod: 'Bank Transfer',
-    notes: 'Vendor payment',
-  },
-  {
-    expenseDate: new Date(),
-    category: 'Labour',
-    description: 'Weekly machine operator wages',
-    amount: 12000,
-    paymentMethod: 'Cash',
-    notes: 'Factory staff wages',
-  },
-];
+// Initial Default Expenses (Empty for clean state)
+const DEFAULT_EXPENSES = [];
 
 async function seedDatabase() {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@sharmilaleafware.com';
@@ -278,36 +203,18 @@ async function seedDatabase() {
       console.log('[Seed] Business settings initialized');
     }
 
-    // Seed Orders & Payments
-    const orderCount = await Order.countDocuments();
-    if (orderCount === 0) {
-      for (const ord of DEFAULT_ORDERS) {
-        const createdOrder = await Order.create(ord);
-        if (ord.paidAmount > 0) {
-          await Payment.create({
-            paymentId: `PAY-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 100)}`,
-            order: createdOrder._id,
-            orderId: createdOrder.orderId,
-            customerName: createdOrder.customerName,
-            amount: createdOrder.paidAmount,
-            paymentDate: new Date(),
-            paymentMethod: 'UPI',
-            notes: 'Initial payment',
-          });
-        }
-      }
-      console.log('[Seed] Initial orders & payments initialized');
-    }
+    console.log('[Seed] Database initialization complete.');
+  }
 
-    // Seed Expenses
-    const expenseCount = await Expense.countDocuments();
-    if (expenseCount === 0) {
-      await Expense.insertMany(DEFAULT_EXPENSES);
-      console.log('[Seed] Initial expenses initialized');
-    }
-  } else {
-    // Seed Fallback Data
-    const fallback = getFallbackData();
+  // Ensure fallback storage collections exist
+  const fallback = getFallbackData();
+  if (!fallback.orders) fallback.orders = [];
+  if (!fallback.payments) fallback.payments = [];
+  if (!fallback.expenses) fallback.expenses = [];
+  saveFallbackStorage();
+
+  if (!isMongoConnected) {
+    // Seed Fallback Data (users, categories, products, gallery, settings only)
 
     if (!fallback.users || fallback.users.length === 0) {
       fallback.users = [
@@ -377,46 +284,9 @@ async function seedDatabase() {
       };
     }
 
-    if (!fallback.orders || fallback.orders.length === 0) {
-      fallback.orders = DEFAULT_ORDERS.map((o, i) => ({
-        _id: `ord_${i + 1}`,
-        ...o,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
-      fallback.payments = [
-        {
-          _id: 'pay_1',
-          paymentId: 'PAY-100001',
-          orderId: 'SLW-2026-0001',
-          customerName: 'Suresh Kumar',
-          amount: 10300,
-          paymentDate: new Date().toISOString(),
-          paymentMethod: 'UPI',
-          notes: 'Full payment',
-        },
-        {
-          _id: 'pay_2',
-          paymentId: 'PAY-100002',
-          orderId: 'SLW-2026-0002',
-          customerName: 'Anitha Ramesh',
-          amount: 15000,
-          paymentDate: new Date().toISOString(),
-          paymentMethod: 'Bank Transfer',
-          notes: 'Advance payment',
-        },
-      ];
-    }
-
-    if (!fallback.expenses || fallback.expenses.length === 0) {
-      fallback.expenses = DEFAULT_EXPENSES.map((e, i) => ({
-        _id: `exp_${i + 1}`,
-        ...e,
-        expenseDate: e.expenseDate.toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
-    }
+    if (!fallback.orders) fallback.orders = [];
+    if (!fallback.payments) fallback.payments = [];
+    if (!fallback.expenses) fallback.expenses = [];
 
     saveFallbackStorage();
     console.log('[Seed] Fallback data fully initialized');
@@ -434,6 +304,81 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+
+// Robots.txt & Sitemap.xml Endpoints
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(`User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://sharmilaleafware.com/sitemap.xml`);
+});
+
+app.get('/sitemap.xml', async (req, res) => {
+  res.type('application/xml');
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://sharmilaleafware.com/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/products</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/about</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/why-us</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/quality</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/export</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/contact</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/products/10-inch-round-dinner-plate</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/products/9-inch-square-dinner-plate</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/products/4-compartment-buffet-tray</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharmilaleafware.com/products/6-inch-deep-salad-bowl</loc>
+    <lastmod>2026-08-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+</urlset>`);
+});
 
 // Health Check
 app.get('/api/health', (req, res) => {

@@ -5,6 +5,12 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import Home from '@/pages/Home';
+import AboutPage from '@/pages/AboutPage';
+import ProductsPage from '@/pages/ProductsPage';
+import WhyUsPage from '@/pages/WhyUsPage';
+import QualityPage from '@/pages/QualityPage';
+import ExportPage from '@/pages/ExportPage';
+import ContactPage from '@/pages/ContactPage';
 import ProductDetail from '@/pages/ProductDetail';
 import AdminLogin from '@/pages/AdminLogin';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -65,6 +71,12 @@ export default function App() {
                 <main className="min-h-screen">
                   <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/products" element={<ProductsPage />} />
+                    <Route path="/why-us" element={<WhyUsPage />} />
+                    <Route path="/quality" element={<QualityPage />} />
+                    <Route path="/export" element={<ExportPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
                     <Route path="/products/:slug" element={<ProductDetail />} />
                   </Routes>
                 </main>

@@ -96,7 +96,7 @@ export default function AdminInvoices() {
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center">
             <FileText className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
-            <p className="font-sans text-sm text-[#64748B]">No invoices found.</p>
+            <p className="font-sans text-sm text-[#64748B]">No invoices yet.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">

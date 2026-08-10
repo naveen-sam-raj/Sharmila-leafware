@@ -28,6 +28,9 @@ export interface Product {
   moq?: string;
   description: string;
   images?: string[];
+  front_image?: string;
+  angle_45_image?: string;
+  top_image?: string;
   thumbnail?: string;
   image_url?: string | null;
   gallery_urls?: string[];

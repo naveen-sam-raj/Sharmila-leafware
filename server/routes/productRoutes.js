@@ -184,6 +184,9 @@ router.post('/', protect, async (req, res) => {
       moq,
       description,
       images,
+      front_image,
+      angle_45_image,
+      top_image,
       thumbnail,
       cloudinaryPublicIds,
       status,
@@ -198,10 +201,24 @@ router.post('/', protect, async (req, res) => {
     const slug = makeSlug(name);
 
     if (isMongoConnected) {
+      // Resolve Category ID to valid Mongo ObjectId
+      let catId = typeof category === 'object' ? (category._id || category.id || category) : category;
+      if (typeof catId === 'string' && !catId.match(/^[0-9a-fA-F]{24}$/)) {
+        const foundCat = await Category.findOne({
+          $or: [{ slug: catId.toLowerCase() }, { _id: catId }],
+        });
+        if (foundCat) {
+          catId = foundCat._id;
+        } else {
+          const firstCat = await Category.findOne({});
+          if (firstCat) catId = firstCat._id;
+        }
+      }
+
       const product = await Product.create({
         name: name.trim(),
         slug,
-        category,
+        category: catId,
         subCategory: subCategory || '',
         size: size.trim(),
         shape: shape || 'Round',
@@ -209,6 +226,9 @@ router.post('/', protect, async (req, res) => {
         moq: moq !== undefined ? String(moq) : undefined,
         description: description.trim(),
         images: images || [thumbnail],
+        front_image: front_image || '',
+        angle_45_image: angle_45_image || '',
+        top_image: top_image || '',
         thumbnail,
         cloudinaryPublicIds: cloudinaryPublicIds || [],
         status: status || 'active',
@@ -230,6 +250,9 @@ router.post('/', protect, async (req, res) => {
         moq: moq !== undefined ? String(moq) : undefined,
         description: description.trim(),
         images: images || [thumbnail],
+        front_image: front_image || '',
+        angle_45_image: angle_45_image || '',
+        top_image: top_image || '',
         thumbnail,
         cloudinaryPublicIds: cloudinaryPublicIds || [],
         status: status || 'active',
@@ -245,7 +268,7 @@ router.post('/', protect, async (req, res) => {
     }
   } catch (error) {
     console.error('Error creating product:', error);
-    return res.status(500).json({ message: 'Failed to create product' });
+    return res.status(500).json({ message: error.message || 'Failed to create product' });
   }
 });
 
@@ -254,16 +277,34 @@ router.post('/', protect, async (req, res) => {
 router.put('/:id', protect, async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const updates = { ...req.body };
 
     if (updates.name) {
       updates.slug = makeSlug(updates.name);
     }
 
     if (isMongoConnected) {
-      const existingProduct = await Product.findById(id);
+      let existingProduct = null;
+      if (id.match(/^[0-9a-fA-F]{24}$/)) {
+        existingProduct = await Product.findById(id);
+      }
+      if (!existingProduct) {
+        existingProduct = await Product.findOne({ slug: id });
+      }
+
       if (!existingProduct) {
         return res.status(404).json({ message: 'Product not found' });
+      }
+
+      // Resolve Category ID if passed in updates
+      if (updates.category) {
+        let catId = typeof updates.category === 'object' ? (updates.category._id || updates.category.id || updates.category) : updates.category;
+        if (typeof catId === 'string' && !catId.match(/^[0-9a-fA-F]{24}$/)) {
+          const foundCat = await Category.findOne({ slug: catId.toLowerCase() });
+          if (foundCat) updates.category = foundCat._id;
+        } else {
+          updates.category = catId;
+        }
       }
 
       // Check if Cloudinary public IDs were removed/replaced and delete old images
@@ -276,11 +317,11 @@ router.put('/:id', protect, async (req, res) => {
         }
       }
 
-      const updated = await Product.findByIdAndUpdate(id, updates, { new: true }).populate('category');
+      const updated = await Product.findByIdAndUpdate(existingProduct._id, updates, { new: true }).populate('category');
       return res.json(updated);
     } else {
       const fallback = getFallbackData();
-      const idx = fallback.products.findIndex((p) => p._id === id || p.id === id);
+      const idx = fallback.products.findIndex((p) => p._id === id || p.id === id || p.slug === id);
       if (idx === -1) {
         return res.status(404).json({ message: 'Product not found' });
       }
@@ -310,7 +351,7 @@ router.put('/:id', protect, async (req, res) => {
     }
   } catch (error) {
     console.error('Error updating product:', error);
-    return res.status(500).json({ message: 'Failed to update product' });
+    return res.status(500).json({ message: error.message || 'Failed to update product' });
   }
 });
 

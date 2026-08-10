@@ -22,9 +22,12 @@ export default function AdminEditProduct() {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'active' | 'inactive'>('active');
 
-  // Images State
-  const [thumbnailImage, setThumbnailImage] = useState<Array<{ url: string; public_id?: string }>>([]);
-  const [galleryImages, setGalleryImages] = useState<Array<{ url: string; public_id?: string }>>([]);
+  // Images State (Cloudinary uploaded)
+  const [thumbnailImage, setThumbnailImage] = useState<UploadedImage[]>([]);
+  const [frontViewImage, setFrontViewImage] = useState<UploadedImage[]>([]);
+  const [angle45ViewImage, setAngle45ViewImage] = useState<UploadedImage[]>([]);
+  const [topViewImage, setTopViewImage] = useState<UploadedImage[]>([]);
+  const [galleryImages, setGalleryImages] = useState<UploadedImage[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +70,16 @@ export default function AdminEditProduct() {
           setThumbnailImage([{ url: thumbUrl, public_id: productData.cloudinaryPublicIds?.[0] }]);
         }
 
+        if (productData.front_image) {
+          setFrontViewImage([{ url: productData.front_image }]);
+        }
+        if (productData.angle_45_image) {
+          setAngle45ViewImage([{ url: productData.angle_45_image }]);
+        }
+        if (productData.top_image) {
+          setTopViewImage([{ url: productData.top_image }]);
+        }
+
         const gallery = (productData.images || productData.gallery_urls || []).slice(1);
         const galleryPublicIds = (productData.cloudinaryPublicIds || []).slice(1);
 
@@ -100,9 +113,19 @@ export default function AdminEditProduct() {
     setSubmitting(true);
 
     try {
-      const allImageUrls = [thumbnailImage[0].url, ...galleryImages.map((g) => g.url)];
+      const allImageUrls = [
+        thumbnailImage[0].url,
+        ...(frontViewImage[0]?.url ? [frontViewImage[0].url] : []),
+        ...(angle45ViewImage[0]?.url ? [angle45ViewImage[0].url] : []),
+        ...(topViewImage[0]?.url ? [topViewImage[0].url] : []),
+        ...galleryImages.map((g) => g.url),
+      ].filter((url, idx, arr) => url && arr.indexOf(url) === idx);
+
       const newPublicIds = [
         thumbnailImage[0].public_id,
+        frontViewImage[0]?.public_id,
+        angle45ViewImage[0]?.public_id,
+        topViewImage[0]?.public_id,
         ...galleryImages.map((g) => g.public_id),
       ].filter(Boolean) as string[];
 
@@ -118,7 +141,8 @@ export default function AdminEditProduct() {
         }
       }
 
-      await updateProduct(id, {
+      const prodId = product?._id || product?.id || id;
+      await updateProduct(prodId, {
         name: name.trim(),
         category: categoryId,
         subCategory: subCategory.trim(),
@@ -126,6 +150,9 @@ export default function AdminEditProduct() {
         shape,
         description: description.trim(),
         thumbnail: thumbnailImage[0].url,
+        front_image: frontViewImage[0]?.url || thumbnailImage[0].url,
+        angle_45_image: angle45ViewImage[0]?.url || '',
+        top_image: topViewImage[0]?.url || '',
         images: allImageUrls,
         cloudinaryPublicIds: newPublicIds,
         status,
@@ -283,6 +310,40 @@ export default function AdminEditProduct() {
               onChange={setThumbnailImage}
               multiple={false}
             />
+
+            {/* 360° Interactive Product Views */}
+            <div className="p-5 rounded-2xl bg-[#FAF3E8]/40 border border-[#1F4D36]/15 space-y-4">
+              <div className="flex items-center gap-2">
+                <h4 className="font-serif font-bold text-[#1F4D36] text-base">PRODUCT VIEWS (360° STYLE VIEWER)</h4>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#1F4D36] text-white">
+                  3 Views
+                </span>
+              </div>
+              <p className="font-sans text-xs text-[#64748B]">
+                Upload 3 distinct view angles (Front, 45° Angle, Top View) to enable the interactive 360°-style product viewer on the store.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <ImageUploader
+                  label="1. Front View Image"
+                  images={frontViewImage}
+                  onChange={setFrontViewImage}
+                  multiple={false}
+                />
+                <ImageUploader
+                  label="2. 45° Angle View Image"
+                  images={angle45ViewImage}
+                  onChange={setAngle45ViewImage}
+                  multiple={false}
+                />
+                <ImageUploader
+                  label="3. Top View Image"
+                  images={topViewImage}
+                  onChange={setTopViewImage}
+                  multiple={false}
+                />
+              </div>
+            </div>
 
             {/* Additional Images */}
             <ImageUploader

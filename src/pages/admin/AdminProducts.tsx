@@ -97,18 +97,18 @@ export default function AdminProducts() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Card */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-[#174B38]/10 shadow-xs">
         <div>
-          <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Manage Products</h1>
-          <p className="font-sans text-xs text-[#64748B] mt-0.5">
+          <h1 className="font-serif text-2xl sm:text-3xl text-[#174B38] font-bold">Manage Products</h1>
+          <p className="font-sans text-xs text-[#6D7C58] mt-1">
             Search, filter, edit, activate/deactivate, and manage catalog inventory
           </p>
         </div>
 
         <Link
           to="/admin/products/add"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-sans text-xs font-semibold text-white bg-[#1F4D36] hover:bg-[#163827] transition-all shadow-md shrink-0"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-sans text-xs font-semibold text-white bg-[#174B38] hover:bg-[#123B2C] transition-all shadow-xs shrink-0"
         >
           <PlusCircle className="w-4 h-4" /> Add Product
         </Link>

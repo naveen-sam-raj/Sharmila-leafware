@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import Hero from '@/sections/Hero';
 import About from '@/sections/About';
 import WhySharmila from '@/sections/WhySharmila';
@@ -12,6 +13,11 @@ import Contact from '@/sections/Contact';
 export default function Home() {
   return (
     <>
+      <SEO
+        title="Sharmila Leafware | Premium Areca Leaf Plates Manufacturer & Exporter"
+        description="Sharmila Leafware manufactures and exports premium natural areca leaf plates, bowls, trays and eco-friendly tableware from India. 100% natural, biodegradable and chemical-free."
+        canonicalUrl="https://sharmilaleafware.com"
+      />
       <Hero />
       <About />
       <WhySharmila />
