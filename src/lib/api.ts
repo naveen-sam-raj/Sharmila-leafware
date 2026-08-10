@@ -120,34 +120,52 @@ export async function fetchProductBySlug(idOrSlug: string): Promise<Product | nu
 
 // Create product
 export async function createProduct(productData: Partial<Product>): Promise<Product> {
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify(productData),
-  });
+  try {
+    const res = await fetch('/api/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify(productData),
+    });
 
-  const data = await safeParseJson(res);
-  if (!res.ok) throw new Error(data.message || 'Failed to create product');
-  return data;
+    const data = await safeParseJson(res);
+    if (!res.ok) {
+      throw new Error(`Server Error (${res.status}): ${data.message || 'Failed to create product'}`);
+    }
+    return data;
+  } catch (err) {
+    if (err instanceof TypeError && err.message === 'Failed to fetch') {
+      throw new Error('Network Connection Error ("Failed to fetch"): Unable to reach backend server (/api/products). Check backend status or CORS settings.');
+    }
+    throw err;
+  }
 }
 
 // Update product
 export async function updateProduct(id: string, updates: Partial<Product>): Promise<Product> {
-  const res = await fetch(`/api/products/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify(updates),
-  });
+  try {
+    const res = await fetch(`/api/products/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify(updates),
+    });
 
-  const data = await safeParseJson(res);
-  if (!res.ok) throw new Error(data.message || 'Failed to update product');
-  return data;
+    const data = await safeParseJson(res);
+    if (!res.ok) {
+      throw new Error(`Server Error (${res.status}): ${data.message || 'Failed to update product'}`);
+    }
+    return data;
+  } catch (err) {
+    if (err instanceof TypeError && err.message === 'Failed to fetch') {
+      throw new Error(`Network Connection Error ("Failed to fetch"): Unable to reach backend server (/api/products/${id}). Check backend status or CORS settings.`);
+    }
+    throw err;
+  }
 }
 
 // Toggle product status
