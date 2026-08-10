@@ -14,6 +14,8 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+export const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 export async function safeParseJson(res: Response): Promise<any> {
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
@@ -33,7 +35,7 @@ export async function safeParseJson(res: Response): Promise<any> {
 // Fetch categories
 export async function fetchCategories(includeInactive = false): Promise<Category[]> {
   try {
-    const res = await fetch(`/api/categories${includeInactive ? '?includeInactive=true' : ''}`);
+    const res = await fetch(`${API_BASE_URL}/api/categories${includeInactive ? '?includeInactive=true' : ''}`);
     if (!res.ok) throw new Error('Failed to fetch categories');
     return await res.json();
   } catch (err) {
@@ -56,7 +58,7 @@ export async function fetchGallery(params?: {
     if (params?.search) query.append('search', params.search);
     if (params?.status) query.append('status', params.status);
 
-    const res = await fetch(`/api/gallery?${query.toString()}`);
+    const res = await fetch(`${API_BASE_URL}/api/gallery?${query.toString()}`);
     if (!res.ok) throw new Error('Failed to fetch gallery items');
     const data = await res.json();
 
@@ -92,7 +94,7 @@ export async function fetchProducts(params?: {
     if (params?.limit) query.append('limit', String(params.limit));
     if (params?.includeInactive) query.append('includeInactive', 'true');
 
-    const res = await fetch(`/api/products?${query.toString()}`);
+    const res = await fetch(`${API_BASE_URL}/api/products?${query.toString()}`);
     if (!res.ok) throw new Error('Failed to fetch products');
     const data = await res.json();
 
@@ -109,7 +111,7 @@ export async function fetchProducts(params?: {
 // Fetch single product
 export async function fetchProductBySlug(idOrSlug: string): Promise<Product | null> {
   try {
-    const res = await fetch(`/api/products/${encodeURIComponent(idOrSlug)}`);
+    const res = await fetch(`${API_BASE_URL}/api/products/${encodeURIComponent(idOrSlug)}`);
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
@@ -121,7 +123,7 @@ export async function fetchProductBySlug(idOrSlug: string): Promise<Product | nu
 // Create product
 export async function createProduct(productData: Partial<Product>): Promise<Product> {
   try {
-    const res = await fetch('/api/products', {
+    const res = await fetch(`${API_BASE_URL}/api/products`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -146,7 +148,7 @@ export async function createProduct(productData: Partial<Product>): Promise<Prod
 // Update product
 export async function updateProduct(id: string, updates: Partial<Product>): Promise<Product> {
   try {
-    const res = await fetch(`/api/products/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +172,7 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
 
 // Toggle product status
 export async function updateProductStatus(id: string, status: 'active' | 'inactive'): Promise<Product> {
-  const res = await fetch(`/api/products/${id}/status`, {
+  const res = await fetch(`${API_BASE_URL}/api/products/${id}/status`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -186,7 +188,7 @@ export async function updateProductStatus(id: string, status: 'active' | 'inacti
 
 // Delete product
 export async function deleteProduct(id: string): Promise<void> {
-  const res = await fetch(`/api/products/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
@@ -199,7 +201,7 @@ export async function deleteProduct(id: string): Promise<void> {
 
 // Category CRUD
 export async function createCategory(categoryData: Partial<Category>): Promise<Category> {
-  const res = await fetch('/api/categories', {
+  const res = await fetch(`${API_BASE_URL}/api/categories`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(categoryData),
@@ -210,7 +212,7 @@ export async function createCategory(categoryData: Partial<Category>): Promise<C
 }
 
 export async function updateCategory(id: string, updates: Partial<Category>): Promise<Category> {
-  const res = await fetch(`/api/categories/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(updates),
@@ -221,7 +223,7 @@ export async function updateCategory(id: string, updates: Partial<Category>): Pr
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  const res = await fetch(`/api/categories/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
@@ -231,7 +233,7 @@ export async function deleteCategory(id: string): Promise<void> {
 
 // Gallery CRUD
 export async function createGalleryItem(itemData: Partial<GalleryItem>): Promise<GalleryItem> {
-  const res = await fetch('/api/gallery', {
+  const res = await fetch(`${API_BASE_URL}/api/gallery`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(itemData),
@@ -242,7 +244,7 @@ export async function createGalleryItem(itemData: Partial<GalleryItem>): Promise
 }
 
 export async function updateGalleryItem(id: string, updates: Partial<GalleryItem>): Promise<GalleryItem> {
-  const res = await fetch(`/api/gallery/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(updates),
@@ -253,7 +255,7 @@ export async function updateGalleryItem(id: string, updates: Partial<GalleryItem
 }
 
 export async function updateGalleryStatus(id: string, status: 'active' | 'inactive'): Promise<GalleryItem> {
-  const res = await fetch(`/api/gallery/${id}/status`, {
+  const res = await fetch(`${API_BASE_URL}/api/gallery/${id}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify({ status }),
@@ -264,7 +266,7 @@ export async function updateGalleryStatus(id: string, status: 'active' | 'inacti
 }
 
 export async function deleteGalleryItem(id: string): Promise<void> {
-  const res = await fetch(`/api/gallery/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
@@ -279,7 +281,7 @@ export async function uploadImageToCloudinary(file: File): Promise<{ url: string
   const formData = new FormData();
   formData.append('image', file);
 
-  const res = await fetch('/api/upload', {
+  const res = await fetch(`${API_BASE_URL}/api/upload`, {
     method: 'POST',
     headers: getAuthHeader(),
     body: formData,
@@ -292,7 +294,7 @@ export async function uploadImageToCloudinary(file: File): Promise<{ url: string
 
 export async function deleteImageFromCloudinary(publicId: string): Promise<void> {
   if (!publicId) return;
-  await fetch(`/api/upload?public_id=${encodeURIComponent(publicId)}`, {
+  await fetch(`${API_BASE_URL}/api/upload?public_id=${encodeURIComponent(publicId)}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
@@ -317,7 +319,7 @@ export async function fetchOrders(params?: {
   if (params?.page) query.append('page', String(params.page));
   if (params?.limit) query.append('limit', String(params.limit));
 
-  const res = await fetch(`/api/orders?${query.toString()}`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders?${query.toString()}`, {
     headers: getAuthHeader(),
   });
   if (!res.ok) throw new Error('Failed to fetch orders');
@@ -329,7 +331,7 @@ export async function fetchOrders(params?: {
 }
 
 export async function fetchOrderById(id: string): Promise<Order | null> {
-  const res = await fetch(`/api/orders/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
     headers: getAuthHeader(),
   });
   if (!res.ok) return null;
@@ -337,7 +339,7 @@ export async function fetchOrderById(id: string): Promise<Order | null> {
 }
 
 export async function createOrder(orderData: Partial<Order>): Promise<Order> {
-  const res = await fetch('/api/orders', {
+  const res = await fetch(`${API_BASE_URL}/api/orders`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(orderData),
@@ -348,7 +350,7 @@ export async function createOrder(orderData: Partial<Order>): Promise<Order> {
 }
 
 export async function updateOrder(id: string, updates: Partial<Order>): Promise<Order> {
-  const res = await fetch(`/api/orders/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(updates),
@@ -362,7 +364,7 @@ export async function recordOrderPayment(
   orderId: string,
   paymentDetails: { amount: number; paymentMethod: string; referenceNumber?: string; notes?: string }
 ): Promise<{ order: Order; payment: Payment }> {
-  const res = await fetch(`/api/orders/${orderId}/payments`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/payments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(paymentDetails),
@@ -376,7 +378,7 @@ export async function updateOrderStatus(
   id: string,
   statuses: { orderStatus?: string; paymentStatus?: string }
 ): Promise<Order> {
-  const res = await fetch(`/api/orders/${id}/status`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${id}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(statuses),
@@ -387,7 +389,7 @@ export async function updateOrderStatus(
 }
 
 export async function cancelOrder(id: string): Promise<void> {
-  const res = await fetch(`/api/orders/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
@@ -404,7 +406,7 @@ export async function fetchPayments(params?: { startDate?: string; endDate?: str
   if (params?.endDate) query.append('endDate', params.endDate);
   if (params?.limit) query.append('limit', String(params.limit));
 
-  const res = await fetch(`/api/payments?${query.toString()}`, {
+  const res = await fetch(`${API_BASE_URL}/api/payments?${query.toString()}`, {
     headers: getAuthHeader(),
   });
   if (!res.ok) throw new Error('Failed to fetch payments');
@@ -424,7 +426,7 @@ export async function fetchExpenses(params?: {
   if (params?.startDate) query.append('startDate', params.startDate);
   if (params?.endDate) query.append('endDate', params.endDate);
 
-  const res = await fetch(`/api/expenses?${query.toString()}`, {
+  const res = await fetch(`${API_BASE_URL}/api/expenses?${query.toString()}`, {
     headers: getAuthHeader(),
   });
   if (!res.ok) throw new Error('Failed to fetch expenses');
@@ -432,7 +434,7 @@ export async function fetchExpenses(params?: {
 }
 
 export async function createExpense(expenseData: Partial<Expense>): Promise<Expense> {
-  const res = await fetch('/api/expenses', {
+  const res = await fetch(`${API_BASE_URL}/api/expenses`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(expenseData),
@@ -443,7 +445,7 @@ export async function createExpense(expenseData: Partial<Expense>): Promise<Expe
 }
 
 export async function updateExpense(id: string, updates: Partial<Expense>): Promise<Expense> {
-  const res = await fetch(`/api/expenses/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/expenses/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(updates),
@@ -454,7 +456,7 @@ export async function updateExpense(id: string, updates: Partial<Expense>): Prom
 }
 
 export async function deleteExpense(id: string): Promise<void> {
-  const res = await fetch(`/api/expenses/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/expenses/${id}`, {
     method: 'DELETE',
     headers: getAuthHeader(),
   });
@@ -466,13 +468,13 @@ export async function deleteExpense(id: string): Promise<void> {
 
 // BUSINESS SETTINGS SERVICES
 export async function fetchSettings(): Promise<BusinessSettings> {
-  const res = await fetch('/api/settings');
+  const res = await fetch(`${API_BASE_URL}/api/settings`);
   if (!res.ok) throw new Error('Failed to fetch business settings');
   return await res.json();
 }
 
 export async function updateSettings(updates: Partial<BusinessSettings>): Promise<BusinessSettings> {
-  const res = await fetch('/api/settings', {
+  const res = await fetch(`${API_BASE_URL}/api/settings`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     body: JSON.stringify(updates),
@@ -489,7 +491,7 @@ export async function fetchDashboardStats(range = 'this_month', startDate?: stri
   if (startDate) query.append('startDate', startDate);
   if (endDate) query.append('endDate', endDate);
 
-  const res = await fetch(`/api/dashboard/stats?${query.toString()}`, {
+  const res = await fetch(`${API_BASE_URL}/api/dashboard/stats?${query.toString()}`, {
     headers: getAuthHeader(),
   });
   if (!res.ok) throw new Error('Failed to fetch dashboard metrics');
