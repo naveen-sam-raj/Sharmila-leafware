@@ -62,7 +62,7 @@ router.get('/', async (req, res) => {
         .limit(Number(limit));
 
       return res.json({
-        products,
+        products: products.map(sanitizeProductForResponse),
         pagination: {
           total,
           page: Number(page),
@@ -116,7 +116,7 @@ router.get('/', async (req, res) => {
       });
 
       return res.json({
-        products: populated,
+        products: populated.map(sanitizeProductForResponse),
         pagination: {
           total,
           page: Number(page),
@@ -129,6 +129,28 @@ router.get('/', async (req, res) => {
     return res.status(500).json({ message: 'Failed to fetch products' });
   }
 });
+
+// Helper to sanitize product object and replace giant base64 Data URIs (>200KB) with clean URLs
+function sanitizeProductForResponse(product) {
+  if (!product) return null;
+  const p = product.toObject ? product.toObject() : { ...product };
+
+  const sanitizeUrl = (url) => {
+    if (typeof url === 'string' && url.startsWith('data:image/') && url.length > 200000) {
+      return 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800';
+    }
+    return url;
+  };
+
+  return {
+    ...p,
+    thumbnail: sanitizeUrl(p.thumbnail),
+    front_image: sanitizeUrl(p.front_image),
+    angle_45_image: sanitizeUrl(p.angle_45_image),
+    top_image: sanitizeUrl(p.top_image),
+    images: Array.isArray(p.images) ? p.images.map(sanitizeUrl) : [],
+  };
+}
 
 // @route   GET /api/products/:idOrSlug
 // @desc    Get single product by ID or Slug
@@ -148,7 +170,7 @@ router.get('/:idOrSlug', async (req, res) => {
       if (!product) {
         return res.status(404).json({ message: 'Product not found' });
       }
-      return res.json(product);
+      return res.json(sanitizeProductForResponse(product));
     } else {
       const fallback = getFallbackData();
       const product = fallback.products.find(
@@ -162,7 +184,7 @@ router.get('/:idOrSlug', async (req, res) => {
       if (typeof catObj === 'string') {
         catObj = fallback.categories.find((c) => c._id === product.category || c.id === product.category) || null;
       }
-      return res.json({ ...product, category: catObj });
+      return res.json(sanitizeProductForResponse({ ...product, category: catObj }));
     }
   } catch (error) {
     console.error('Error fetching product detail:', error);

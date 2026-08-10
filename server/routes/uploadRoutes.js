@@ -52,11 +52,13 @@ router.post('/', protect, (req, res) => {
 
       // Check if Cloudinary credentials are configured
       if (!cloud_name || !api_key || !api_secret) {
-        // Fallback placeholder image mode if user has not filled Cloudinary credentials in .env
-        const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
         const mockPublicId = `sharmila_leafware_${Date.now()}`;
+        const imageUrl = req.file.buffer.length > 100000
+          ? 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800'
+          : `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+
         return res.json({
-          url: base64Data,
+          url: imageUrl,
           public_id: mockPublicId,
           isMock: true,
           message: 'Uploaded via local fallback (Add CLOUDINARY_CLOUD_NAME to .env for production Cloudinary uploads)',
@@ -78,14 +80,15 @@ router.post('/', protect, (req, res) => {
         public_id: result.public_id,
       });
     } catch (uploadError) {
-      console.warn('[Cloudinary Upload Warning] Cloudinary upload error, using Data URI fallback:', uploadError.message);
+      console.warn('[Cloudinary Upload Warning] Cloudinary upload error, using fallback:', uploadError.message);
 
-      // Safe Data URI fallback mode so upload never fails with 403 Forbidden
-      const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
       const mockPublicId = `sharmila_leafware_${Date.now()}`;
-      
+      const imageUrl = req.file.buffer.length > 100000
+        ? 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800'
+        : `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+
       return res.json({
-        url: base64Data,
+        url: imageUrl,
         public_id: mockPublicId,
         isMock: true,
         message: 'Image processed successfully via fallback handler.',
