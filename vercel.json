@@ -5,7 +5,7 @@
       "destination": "https://sharmila-leafware.onrender.com/api/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

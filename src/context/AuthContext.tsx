@@ -42,7 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
-        if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
           const data = await res.json();
           setUser(data.user);
           setToken(storedToken);
@@ -71,6 +72,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await res.text();
+        return { error: text.trim().startsWith('<') ? 'Server returned invalid response. Please verify API configuration.' : text };
+      }
 
       const data = await res.json();
 

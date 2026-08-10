@@ -14,6 +14,22 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+export async function safeParseJson(res: Response): Promise<any> {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    if (text.trim().startsWith('<')) {
+      throw new Error(`API request returned non-JSON response (${res.status}). Verify API proxy configuration.`);
+    }
+    try {
+      return JSON.parse(text);
+    } catch {
+      throw new Error(text || `API request failed with status ${res.status}`);
+    }
+  }
+  return await res.json();
+}
+
 // Fetch categories
 export async function fetchCategories(includeInactive = false): Promise<Category[]> {
   try {
@@ -113,7 +129,7 @@ export async function createProduct(productData: Partial<Product>): Promise<Prod
     body: JSON.stringify(productData),
   });
 
-  const data = await res.json();
+  const data = await safeParseJson(res);
   if (!res.ok) throw new Error(data.message || 'Failed to create product');
   return data;
 }
@@ -129,7 +145,7 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
     body: JSON.stringify(updates),
   });
 
-  const data = await res.json();
+  const data = await safeParseJson(res);
   if (!res.ok) throw new Error(data.message || 'Failed to update product');
   return data;
 }
@@ -251,7 +267,7 @@ export async function uploadImageToCloudinary(file: File): Promise<{ url: string
     body: formData,
   });
 
-  const data = await res.json();
+  const data = await safeParseJson(res);
   if (!res.ok) throw new Error(data.message || 'Image upload failed');
   return data;
 }
