@@ -14,7 +14,18 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 const TOKEN_KEY = 'sharmila_admin_token';
 const USER_KEY = 'sharmila_admin_user';
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/$/, '');
+  }
+  if (import.meta.env.DEV) {
+    return 'http://localhost:5000';
+  }
+  return '';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {

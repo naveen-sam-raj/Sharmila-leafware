@@ -14,7 +14,18 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/$/, '');
+  }
+  if (import.meta.env.DEV) {
+    return 'http://localhost:5000';
+  }
+  return '';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export async function safeParseJson(res: Response): Promise<any> {
   const contentType = res.headers.get('content-type') || '';
