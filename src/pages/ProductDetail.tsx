@@ -137,23 +137,6 @@ export default function ProductDetail() {
 
             <h1 className="font-serif text-4xl lg:text-5xl text-[#1F4D36] font-medium mb-4">{product.name}</h1>
 
-            {/* Price & MOQ Pill Badge */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              {product.price !== undefined && (
-                <div className="px-4 py-2 rounded-2xl bg-[#FAF3E8] border border-[#C8A45D]/40">
-                  <span className="font-sans text-xs text-[#64748B] block">Unit Price</span>
-                  <span className="font-serif text-2xl font-bold text-[#1F4D36]">₹{product.price}</span>
-                  <span className="font-sans text-xs text-[#64748B]"> / piece</span>
-                </div>
-              )}
-
-              {product.moq && (
-                <div className="px-4 py-2 rounded-2xl bg-[#FAF3E8] border border-[#1F4D36]/15">
-                  <span className="font-sans text-xs text-[#64748B] block">Minimum Order Quantity</span>
-                  <span className="font-sans text-lg font-bold text-[#1F4D36]">{product.moq}</span>
-                </div>
-              )}
-            </div>
 
             <p className="font-sans text-base font-light text-[#475569] leading-relaxed mb-8">
               {product.description}

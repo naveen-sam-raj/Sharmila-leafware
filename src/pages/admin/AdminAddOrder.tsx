@@ -55,8 +55,8 @@ export default function AdminAddOrder() {
               productName: first.name,
               size: first.size || '',
               quantity: 100,
-              unitPrice: first.price || 10,
-              total: 100 * (first.price || 10),
+              unitPrice: first.price || 0,
+              total: 100 * (first.price || 0),
             },
           ]);
         }
@@ -110,7 +110,7 @@ export default function AdminAddOrder() {
     const newId = firstProd ? firstProd._id || firstProd.id || '' : '';
     const newName = firstProd ? firstProd.name : 'Custom Item';
     const newSize = firstProd ? firstProd.size || '' : '';
-    const newPrice = firstProd ? firstProd.price || 10 : 10;
+    const newPrice = firstProd ? firstProd.price || 0 : 0;
 
     setItems([
       ...items,
@@ -333,7 +333,7 @@ export default function AdminAddOrder() {
                   >
                     {availableProducts.map((p) => (
                       <option key={p._id || p.id} value={p._id || p.id}>
-                        {p.name} ({p.size}) — ₹{p.price}
+                        {p.name} ({p.size}){p.price !== undefined ? ` — ₹${p.price}` : ''}
                       </option>
                     ))}
                   </select>

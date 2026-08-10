@@ -52,21 +52,11 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
               {product.description}
             </p>
 
-            {/* Specifications: Size, Price, MOQ */}
+            {/* Specifications: Size */}
             <div className="flex flex-wrap items-center gap-2 mb-6 text-xs font-sans">
               {displaySize && (
                 <span className="px-3 py-1 rounded-full text-[#1F4D36] border border-[#1F4D36]/15 bg-[#FAF3E8] font-medium">
                   Size: {displaySize}
-                </span>
-              )}
-              {product.price !== undefined && (
-                <span className="px-3 py-1 rounded-full text-[#1F4D36] border border-[#C8A45D]/40 bg-[#FFFDF9] font-bold">
-                  ₹{product.price} / pc
-                </span>
-              )}
-              {product.moq && (
-                <span className="px-3 py-1 rounded-full text-[#64748B] bg-slate-100 font-medium">
-                  MOQ: {product.moq}
                 </span>
               )}
             </div>

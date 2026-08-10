@@ -18,8 +18,6 @@ export default function AdminAddProduct() {
   const [subCategory, setSubCategory] = useState('');
   const [size, setSize] = useState('10 Inch');
   const [shape, setShape] = useState('Round');
-  const [price, setPrice] = useState('12');
-  const [moq, setMoq] = useState('100 Pieces');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'active' | 'inactive'>('active');
 
@@ -54,8 +52,6 @@ export default function AdminAddProduct() {
     // Validation
     if (!name.trim()) return setError('Product name is required');
     if (!categoryId) return setError('Please select a category');
-    if (!price || Number(price) <= 0) return setError('Please enter a valid price');
-    if (!moq.trim()) return setError('Please enter minimum order quantity (MOQ)');
     if (!size.trim()) return setError('Please enter size');
     if (!description.trim()) return setError('Please enter product description');
     if (thumbnailImage.length === 0) return setError('Please upload at least one main product image');
@@ -75,8 +71,6 @@ export default function AdminAddProduct() {
         subCategory: subCategory.trim(),
         size: size.trim(),
         shape,
-        price: Number(price),
-        moq: moq.trim(),
         description: description.trim(),
         thumbnail: thumbnailImage[0].url,
         images: allImageUrls,
@@ -208,37 +202,6 @@ export default function AdminAddProduct() {
             </select>
           </div>
 
-          {/* Price */}
-          <div>
-            <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-[#1F4D36] mb-2">
-              Price (₹ per piece) *
-            </label>
-            <input
-              type="number"
-              required
-              min="0.1"
-              step="0.1"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="e.g. 12"
-              className="w-full px-4 py-3.5 rounded-xl bg-[#FAF3E8]/40 border border-[#1F4D36]/20 font-sans text-sm focus:outline-none focus:border-[#1F4D36] focus:bg-white"
-            />
-          </div>
-
-          {/* MOQ */}
-          <div>
-            <label className="block font-sans text-xs font-semibold uppercase tracking-wider text-[#1F4D36] mb-2">
-              MOQ (Minimum Order Quantity) *
-            </label>
-            <input
-              type="text"
-              required
-              value={moq}
-              onChange={(e) => setMoq(e.target.value)}
-              placeholder="e.g. 100 Pieces"
-              className="w-full px-4 py-3.5 rounded-xl bg-[#FAF3E8]/40 border border-[#1F4D36]/20 font-sans text-sm focus:outline-none focus:border-[#1F4D36] focus:bg-white"
-            />
-          </div>
 
           {/* Description */}
           <div className="md:col-span-2">

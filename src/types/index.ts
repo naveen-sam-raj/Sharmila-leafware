@@ -24,8 +24,8 @@ export interface Product {
   size: string;
   sizes?: string[];
   shape?: string;
-  price: number;
-  moq: string;
+  price?: number;
+  moq?: string;
   description: string;
   images?: string[];
   thumbnail?: string;

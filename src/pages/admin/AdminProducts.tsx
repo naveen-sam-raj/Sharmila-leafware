@@ -174,8 +174,6 @@ export default function AdminProducts() {
             className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF3E8]/40 border border-[#1F4D36]/15 font-sans text-xs focus:outline-none focus:border-[#1F4D36]"
           >
             <option value="latest">Sort by Latest</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
             <option value="name_asc">Name: A to Z</option>
           </select>
         </div>
@@ -209,8 +207,6 @@ export default function AdminProducts() {
                   <th className="py-4 px-6">Product Name</th>
                   <th className="py-4 px-6">Category</th>
                   <th className="py-4 px-6">Size</th>
-                  <th className="py-4 px-6">Price</th>
-                  <th className="py-4 px-6">MOQ</th>
                   <th className="py-4 px-6">Status</th>
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
@@ -246,12 +242,6 @@ export default function AdminProducts() {
 
                       {/* Size */}
                       <td className="py-3 px-6 text-[#334155]">{p.size}</td>
-
-                      {/* Price */}
-                      <td className="py-3 px-6 font-bold text-[#1F4D36]">₹{p.price}</td>
-
-                      {/* MOQ */}
-                      <td className="py-3 px-6 text-[#64748B]">{p.moq}</td>
 
                       {/* Status */}
                       <td className="py-3 px-6">

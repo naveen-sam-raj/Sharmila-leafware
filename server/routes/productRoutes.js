@@ -189,9 +189,9 @@ router.post('/', protect, async (req, res) => {
       status,
     } = req.body;
 
-    if (!name || !category || !price || !moq || !size || !description || !thumbnail) {
+    if (!name || !category || !size || !description || !thumbnail) {
       return res.status(400).json({
-        message: 'Missing required product fields: Name, Category, Price, MOQ, Size, Description, and Thumbnail Image are required.',
+        message: 'Missing required product fields: Name, Category, Size, Description, and Thumbnail Image are required.',
       });
     }
 
@@ -205,8 +205,8 @@ router.post('/', protect, async (req, res) => {
         subCategory: subCategory || '',
         size: size.trim(),
         shape: shape || 'Round',
-        price: Number(price),
-        moq: String(moq),
+        price: price !== undefined ? Number(price) : undefined,
+        moq: moq !== undefined ? String(moq) : undefined,
         description: description.trim(),
         images: images || [thumbnail],
         thumbnail,
@@ -226,8 +226,8 @@ router.post('/', protect, async (req, res) => {
         subCategory: subCategory || '',
         size: size.trim(),
         shape: shape || 'Round',
-        price: Number(price),
-        moq: String(moq),
+        price: price !== undefined ? Number(price) : undefined,
+        moq: moq !== undefined ? String(moq) : undefined,
         description: description.trim(),
         images: images || [thumbnail],
         thumbnail,
