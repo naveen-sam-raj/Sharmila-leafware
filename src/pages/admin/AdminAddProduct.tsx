@@ -86,7 +86,7 @@ export default function AdminAddProduct() {
         shape,
         description: description.trim(),
         thumbnail: thumbnailImage[0].url,
-        front_image: frontViewImage[0]?.url || thumbnailImage[0].url,
+        front_image: frontViewImage[0]?.url || '',
         angle_45_image: angle45ViewImage[0]?.url || '',
         top_image: topViewImage[0]?.url || '',
         images: allImageUrls,

@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import cloudinary from '../config/cloudinary.js';
@@ -39,7 +40,23 @@ router.get('/', async (req, res) => {
       }
 
       if (category && category !== 'all') {
-        filter.category = category;
+        if (mongoose.Types.ObjectId.isValid(category) && String(category).match(/^[0-9a-fA-F]{24}$/)) {
+          filter.category = category;
+        } else {
+          const catObj = await Category.findOne({ slug: String(category).toLowerCase() });
+          if (catObj) {
+            filter.category = catObj._id;
+          } else {
+            return res.json({
+              products: [],
+              pagination: {
+                total: 0,
+                page: Number(page),
+                pages: 1,
+              },
+            });
+          }
+        }
       }
 
       if (search && search.trim()) {

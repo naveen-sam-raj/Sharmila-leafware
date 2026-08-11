@@ -70,7 +70,7 @@ export default function AdminEditProduct() {
           setThumbnailImage([{ url: thumbUrl, public_id: productData.cloudinaryPublicIds?.[0] }]);
         }
 
-        if (productData.front_image) {
+        if (productData.front_image && productData.front_image !== thumbUrl) {
           setFrontViewImage([{ url: productData.front_image }]);
         }
         if (productData.angle_45_image) {
@@ -150,7 +150,7 @@ export default function AdminEditProduct() {
         shape,
         description: description.trim(),
         thumbnail: thumbnailImage[0].url,
-        front_image: frontViewImage[0]?.url || thumbnailImage[0].url,
+        front_image: frontViewImage[0]?.url || '',
         angle_45_image: angle45ViewImage[0]?.url || '',
         top_image: topViewImage[0]?.url || '',
         images: allImageUrls,

@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Category from '../models/Category.js';
 import Product from '../models/Product.js';
 import { isMongoConnected, getFallbackData, saveFallbackStorage } from '../config/db.js';
@@ -34,6 +35,36 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Error fetching categories:', error);
     return res.status(500).json({ message: 'Failed to fetch categories' });
+  }
+});
+
+// @route   GET /api/categories/:id
+// @desc    Get a single category by ID or slug
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isMongoConnected) {
+      const isObjectId = mongoose.Types.ObjectId.isValid(id) && id.match(/^[0-9a-fA-F]{24}$/);
+      const query = isObjectId ? { $or: [{ _id: id }, { slug: id.toLowerCase() }] } : { slug: id.toLowerCase() };
+      const category = await Category.findOne(query);
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+      return res.json(category);
+    } else {
+      const fallback = getFallbackData();
+      const cat = (fallback.categories || []).find(
+        (c) => c._id === id || c.id === id || c.slug === id.toLowerCase()
+      );
+      if (!cat) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+      return res.json(cat);
+    }
+  } catch (error) {
+    console.error('Error fetching single category:', error);
+    return res.status(500).json({ message: 'Failed to fetch category' });
   }
 });
 

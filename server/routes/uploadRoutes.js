@@ -44,6 +44,10 @@ router.post('/', protect, (req, res) => {
     let api_secret = '';
 
     try {
+      // Convert buffer to Data URI for Cloudinary / fallback
+      const b64 = Buffer.from(req.file.buffer).toString('base64');
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
       // Re-configure Cloudinary dynamically to ensure sanitized credentials
       const config = configureCloudinary();
       cloud_name = config.cloud_name;
@@ -53,21 +57,13 @@ router.post('/', protect, (req, res) => {
       // Check if Cloudinary credentials are configured
       if (!cloud_name || !api_key || !api_secret) {
         const mockPublicId = `sharmila_leafware_${Date.now()}`;
-        const imageUrl = req.file.buffer.length > 100000
-          ? 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800'
-          : `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-
         return res.json({
-          url: imageUrl,
+          url: dataURI,
           public_id: mockPublicId,
           isMock: true,
           message: 'Uploaded via local fallback (Add CLOUDINARY_CLOUD_NAME to .env for production Cloudinary uploads)',
         });
       }
-
-      // Convert buffer to Data URI stream for Cloudinary
-      const b64 = Buffer.from(req.file.buffer).toString('base64');
-      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
       // Official signed upload via Cloudinary Node SDK
       const result = await cloudinary.uploader.upload(dataURI, {
@@ -82,13 +78,12 @@ router.post('/', protect, (req, res) => {
     } catch (uploadError) {
       console.warn('[Cloudinary Upload Warning] Cloudinary upload error, using fallback:', uploadError.message);
 
+      const b64 = Buffer.from(req.file.buffer).toString('base64');
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
       const mockPublicId = `sharmila_leafware_${Date.now()}`;
-      const imageUrl = req.file.buffer.length > 100000
-        ? 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800'
-        : `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
 
       return res.json({
-        url: imageUrl,
+        url: dataURI,
         public_id: mockPublicId,
         isMock: true,
         message: 'Image processed successfully via fallback handler.',
