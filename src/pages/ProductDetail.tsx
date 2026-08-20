@@ -113,7 +113,7 @@ function ProductImageViewer({ product }: { product: Product }) {
     <div className="space-y-4 select-none">
       {/* Main Stage */}
       <div
-        className={`relative rounded-[28px] overflow-hidden bg-gradient-to-br from-[#f0ebe0] to-[#e8e0d0] border border-[#174B38]/10 shadow-[0_20px_60px_rgba(23,75,56,0.12)] cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+        className={`relative rounded-[28px] overflow-hidden bg-gradient-to-br from-[#FAF3E8] via-[#FFFDF9] to-[#F5E6C8] border border-[#C8A45D]/40 shadow-[0_15px_45px_rgba(31,77,54,0.1)] cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
         style={{ aspectRatio: '1 / 1' }}
         onMouseDown={(e) => handleDragStart(e.clientX)}
         onMouseMove={(e) => handleDragMove(e.clientX)}
@@ -124,22 +124,22 @@ function ProductImageViewer({ product }: { product: Product }) {
         onTouchEnd={handleDragEnd}
       >
         {/* Subtle texture overlay */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(199,166,106,0.3) 0%, transparent 60%)',
+        <div className="absolute inset-0 opacity-25" style={{
+          backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(200,164,93,0.35) 0%, transparent 60%)',
         }} />
 
         {/* 360 Badge */}
         {views.length > 1 && (
-          <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-[#174B38]/15 shadow-sm">
-            <RotateCcw className="w-3.5 h-3.5 text-[#174B38] animate-spin" style={{ animationDuration: '4s' }} />
-            <span className="font-sans text-[10px] font-bold tracking-widest text-[#174B38] uppercase">360° View</span>
+          <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E291C]/85 backdrop-blur-md border border-[#C8A45D]/40 shadow-sm text-[#F5C842]">
+            <RotateCcw className="w-3.5 h-3.5 text-[#F5C842] animate-spin" style={{ animationDuration: '4s' }} />
+            <span className="font-sans text-[10px] font-bold tracking-widest uppercase">360° View</span>
           </div>
         )}
 
         {/* Zoom button */}
         <button
           onClick={() => setLightboxOpen(true)}
-          className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md border border-[#174B38]/15 shadow-sm flex items-center justify-center text-[#174B38] hover:bg-white hover:scale-110 transition-all"
+          className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-[#0E291C]/80 backdrop-blur-md border border-[#C8A45D]/40 shadow-sm flex items-center justify-center text-[#F5C842] hover:bg-[#C8A45D] hover:text-[#0E291C] transition-all"
           aria-label="Zoom image"
         >
           <ZoomIn className="w-4 h-4" />
@@ -199,19 +199,19 @@ function ProductImageViewer({ product }: { product: Product }) {
               whileTap={{ scale: 0.95 }}
               className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
                 activeIndex === i
-                  ? 'border-[#174B38] shadow-[0_4px_16px_rgba(23,75,56,0.25)] scale-105'
-                  : 'border-[#174B38]/15 opacity-60 hover:opacity-90 hover:border-[#174B38]/40'
+                  ? 'border-[#C8A45D] shadow-[0_4px_16px_rgba(200,164,93,0.3)] scale-105'
+                  : 'border-[#C8A45D]/20 opacity-70 hover:opacity-100 hover:border-[#C8A45D]/60'
               }`}
               style={{ width: 64, height: 64 }}
             >
               <img
                 src={v.url}
                 alt={v.label}
-                className="w-full h-full object-contain bg-[#F0EBE0] p-1"
+                className="w-full h-full object-contain bg-[#FAF6EE] p-1"
                 draggable={false}
               />
               {activeIndex === i && (
-                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#174B38]" />
+                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#C8A45D]" />
               )}
             </motion.button>
           ))}
@@ -220,8 +220,8 @@ function ProductImageViewer({ product }: { product: Product }) {
 
       {/* Drag hint */}
       {views.length > 1 && (
-        <p className="text-center font-sans text-[10px] text-[#6D7C58]/70 tracking-wider">
-          ← Drag or tap thumbnails to rotate →
+        <p className="text-center font-sans text-[10px] text-[#52665A] tracking-wider">
+          ← Drag or tap thumbnails to rotate view →
         </p>
       )}
 
@@ -359,22 +359,22 @@ export default function ProductDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F5ED] text-[#1E2924]">
+    <div className="min-h-screen bg-[#FAF3E8] text-[#1F4D36]">
       <SEO title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl} ogImage={mainImg} ogType="product" jsonLd={productJsonLd} />
 
       {/* ── Subtle top ambient glow ── */}
-      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 opacity-40"
-        style={{ background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(23,75,56,0.12) 0%, transparent 70%)' }} />
+      <div className="fixed top-0 left-0 right-0 h-[500px] pointer-events-none z-0 opacity-35"
+        style={{ background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200,164,93,0.2) 0%, transparent 70%)' }} />
 
       <div className="relative z-10 pt-24 pb-32">
         {/* ── Breadcrumb ── */}
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-14 py-5">
           <nav className="flex items-center gap-2 font-sans text-xs tracking-wider text-[#6D7C58]">
-            <Link to="/" className="hover:text-[#174B38] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#C8A45D] transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3 opacity-40" />
-            <Link to="/#products" className="hover:text-[#174B38] transition-colors">Products</Link>
+            <Link to="/#products" className="hover:text-[#C8A45D] transition-colors">Products</Link>
             <ChevronRight className="w-3 h-3 opacity-40" />
-            <span className="text-[#174B38] font-semibold truncate max-w-[200px] sm:max-w-none">{product.name}</span>
+            <span className="text-[#1F4D36] font-bold truncate max-w-[200px] sm:max-w-none">{product.name}</span>
           </nav>
         </div>
 
@@ -403,28 +403,28 @@ export default function ProductDetail() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
-              className="lg:col-span-6 flex flex-col gap-8"
+              className="lg:col-span-6 flex flex-col gap-7"
             >
               {/* Brand eyebrow */}
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#C7A66A]/40 to-transparent max-w-[60px]" />
-                <span className="font-sans text-[10px] font-bold tracking-[0.35em] text-[#C7A66A] uppercase">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#C8A45D]/60 to-transparent max-w-[60px]" />
+                <span className="font-sans text-[11px] font-bold tracking-[0.35em] text-[#C8A45D] uppercase">
                   Sharmila Leafware
                 </span>
-                <div className="h-px w-4 bg-[#C7A66A]/40" />
+                <div className="h-px w-5 bg-[#C8A45D]/60" />
               </div>
 
               {/* Category chip */}
-              <div className="-mt-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#174B38]/8 border border-[#174B38]/15 font-sans text-[10px] font-semibold tracking-widest text-[#174B38] uppercase">
-                  <Leaf className="w-3 h-3" />
+              <div className="-mt-3">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1F4D36]/10 border border-[#1F4D36]/20 font-sans text-[11px] font-bold tracking-widest text-[#1F4D36] uppercase">
+                  <Leaf className="w-3.5 h-3.5 text-[#17A589]" />
                   {categoryName}
                 </span>
               </div>
 
               {/* Title */}
               <div className="-mt-2">
-                <h1 className="font-serif text-4xl sm:text-5xl lg:text-[3.25rem] text-[#1E2924] font-normal leading-[1.1] tracking-tight">
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-[3.25rem] text-[#1F4D36] font-bold leading-[1.15] tracking-tight">
                   {product.name}
                 </h1>
               </div>
@@ -433,19 +433,19 @@ export default function ProductDetail() {
               <div className="flex items-center gap-3 -mt-2">
                 <div className="flex items-center gap-0.5">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-[#C7A66A] text-[#C7A66A]" />
+                    <Star key={i} className="w-3.5 h-3.5 fill-[#C8A45D] text-[#C8A45D]" />
                   ))}
                 </div>
-                <span className="font-sans text-xs text-[#6D7C58] font-medium">Export Grade · Premium Quality</span>
-                <span className="w-1 h-1 rounded-full bg-[#6D7C58]/40" />
-                <span className="inline-flex items-center gap-1 font-sans text-xs text-[#174B38] font-semibold">
-                  <Award className="w-3.5 h-3.5" /> Verified
+                <span className="font-sans text-xs text-[#52665A] font-semibold">Export Grade · Premium Quality</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C8A45D]" />
+                <span className="inline-flex items-center gap-1 font-sans text-xs text-[#1F4D36] font-bold">
+                  <Award className="w-3.5 h-3.5 text-[#17A589]" /> Verified Pure
                 </span>
               </div>
 
               {/* Description */}
               {product.description && (
-                <p className="font-sans text-[15px] font-light text-[#1E2924]/75 leading-relaxed border-l-2 border-[#C7A66A]/40 pl-4">
+                <p className="font-sans text-[15px] font-normal text-[#4A6052] leading-relaxed border-l-2 border-[#C8A45D] pl-4">
                   {product.description}
                 </p>
               )}
@@ -454,24 +454,24 @@ export default function ProductDetail() {
               {(sizeText || product.shape || product.subCategory) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {sizeText && (
-                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-[#174B38]/10 shadow-sm hover:shadow-md hover:border-[#174B38]/20 transition-all">
-                      <div className="w-10 h-10 rounded-xl bg-[#174B38]/8 flex items-center justify-center text-[#174B38] shrink-0">
-                        <Ruler className="w-4.5 h-4.5" />
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#C8A45D]/30 shadow-xs hover:shadow-md hover:border-[#C8A45D] transition-all">
+                      <div className="w-10 h-10 rounded-xl bg-[#1F4D36]/10 flex items-center justify-center text-[#1F4D36] shrink-0">
+                        <Ruler className="w-4.5 h-4.5 text-[#17A589]" />
                       </div>
                       <div>
-                        <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-[#6D7C58] font-bold block">Dimensions</span>
-                        <span className="font-sans text-sm font-semibold text-[#1E2924]">{sizeText}</span>
+                        <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-[#C8A45D] font-bold block">Dimensions</span>
+                        <span className="font-sans text-sm font-bold text-[#1F4D36]">{sizeText}</span>
                       </div>
                     </div>
                   )}
                   {product.shape && (
-                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-[#174B38]/10 shadow-sm hover:shadow-md hover:border-[#174B38]/20 transition-all">
-                      <div className="w-10 h-10 rounded-xl bg-[#174B38]/8 flex items-center justify-center text-[#174B38] shrink-0">
-                        <Package className="w-4.5 h-4.5" />
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#C8A45D]/30 shadow-xs hover:shadow-md hover:border-[#C8A45D] transition-all">
+                      <div className="w-10 h-10 rounded-xl bg-[#1F4D36]/10 flex items-center justify-center text-[#1F4D36] shrink-0">
+                        <Package className="w-4.5 h-4.5 text-[#17A589]" />
                       </div>
                       <div>
-                        <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-[#6D7C58] font-bold block">Shape</span>
-                        <span className="font-sans text-sm font-semibold text-[#1E2924]">{product.shape}</span>
+                        <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-[#C8A45D] font-bold block">Shape</span>
+                        <span className="font-sans text-sm font-bold text-[#1F4D36]">{product.shape}</span>
                       </div>
                     </div>
                   )}
@@ -481,8 +481,8 @@ export default function ProductDetail() {
               {/* Features */}
               {product.features && product.features.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-sans text-[10px] uppercase tracking-[0.25em] font-bold text-[#174B38]">Key Features</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <h3 className="font-sans text-[11px] uppercase tracking-[0.25em] font-bold text-[#C8A45D]">Key Features</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {product.features.map((feat) => (
                       <motion.div
                         key={feat}
@@ -490,10 +490,10 @@ export default function ProductDetail() {
                         animate={{ opacity: 1, x: 0 }}
                         className="flex items-center gap-2.5"
                       >
-                        <div className="w-5 h-5 rounded-full bg-[#174B38]/10 flex items-center justify-center shrink-0">
-                          <Check className="w-3 h-3 text-[#174B38]" strokeWidth={2.5} />
+                        <div className="w-5 h-5 rounded-full bg-[#1F4D36]/15 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-[#1F4D36]" strokeWidth={2.5} />
                         </div>
-                        <span className="font-sans text-[13px] text-[#1E2924]/85 font-light">{feat}</span>
+                        <span className="font-sans text-[13px] text-[#2C4235] font-medium">{feat}</span>
                       </motion.div>
                     ))}
                   </div>
@@ -501,14 +501,14 @@ export default function ProductDetail() {
               )}
 
               {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-[#174B38]/15 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-[#C8A45D]/40 to-transparent" />
 
               {/* CTA Card */}
-              <div className="p-6 rounded-[20px] bg-white border border-[#174B38]/12 shadow-[0_8px_32px_rgba(23,75,56,0.08)] space-y-5">
+              <div className="p-6 sm:p-7 rounded-[24px] bg-[#FFFDF9] border border-[#C8A45D]/40 shadow-[0_10px_35px_rgba(31,77,54,0.08)] space-y-5">
                 <div>
-                  <h3 className="font-serif text-xl font-medium text-[#1E2924]">Interested in this product?</h3>
-                  <p className="font-sans text-[13px] font-light text-[#6D7C58] mt-1 leading-relaxed">
-                    Connect with us directly on WhatsApp for product details, bulk pricing, and custom enquiries.
+                  <h3 className="font-serif text-xl font-bold text-[#1F4D36]">Interested in this product?</h3>
+                  <p className="font-sans text-[13px] font-normal text-[#52665A] mt-1 leading-relaxed">
+                    Connect with us directly on WhatsApp for product details, bulk pricing, and custom export enquiries.
                   </p>
                 </div>
 
@@ -517,18 +517,17 @@ export default function ProductDetail() {
                   target="_blank"
                   rel="noopener noreferrer"
                   id="whatsapp-enquiry-btn"
-                  className="group w-full inline-flex items-center justify-center gap-3 px-6 py-4 rounded-full font-sans text-[11px] tracking-[0.2em] uppercase font-bold text-white transition-all duration-300 shadow-[0_8px_24px_rgba(23,75,56,0.3)] hover:shadow-[0_12px_32px_rgba(23,75,56,0.45)] hover:scale-[1.02] active:scale-[0.98]"
-                  style={{ background: 'linear-gradient(135deg, #174B38 0%, #0F3326 100%)' }}
+                  className="group w-full inline-flex items-center justify-center gap-3 px-6 py-4 rounded-full font-sans text-xs tracking-widest uppercase font-bold text-white bg-[#1F4D36] hover:bg-[#C8A45D] hover:text-[#1F4D36] border border-[#1F4D36] transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <MessageCircle className="w-4 h-4 transition-transform group-hover:rotate-12" />
-                  Enquire on WhatsApp
-                  <span className="opacity-60 group-hover:opacity-100 transition-opacity">→</span>
+                  <MessageCircle className="w-4.5 h-4.5 transition-transform group-hover:rotate-12" />
+                  <span>Enquire on WhatsApp</span>
+                  <span className="opacity-70 group-hover:opacity-100 transition-opacity">→</span>
                 </a>
 
                 {/* Trust signals */}
                 <div className="flex items-center justify-center gap-4 pt-1">
                   {['🌿 Eco-Certified', '📦 Bulk Orders', '🌍 Export Ready'].map((tag) => (
-                    <span key={tag} className="font-sans text-[10px] text-[#6D7C58] font-medium">{tag}</span>
+                    <span key={tag} className="font-sans text-[11px] text-[#52665A] font-semibold">{tag}</span>
                   ))}
                 </div>
               </div>
@@ -540,11 +539,7 @@ export default function ProductDetail() {
             QUALITY BADGES BAR
         ══════════════════════════════════════════════════ */}
         <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-14 py-12">
-          <div className="relative p-8 rounded-[28px] overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, rgba(23,75,56,0.04) 0%, rgba(199,166,106,0.06) 100%)', border: '1px solid rgba(23,75,56,0.1)' }}>
-            <div className="absolute inset-0 opacity-30"
-              style={{ backgroundImage: 'radial-gradient(circle at 0% 100%, rgba(199,166,106,0.15) 0%, transparent 50%), radial-gradient(circle at 100% 0%, rgba(23,75,56,0.1) 0%, transparent 50%)' }} />
-
+          <div className="relative p-8 rounded-[28px] overflow-hidden bg-[#FFFDF9] border border-[#C8A45D]/30 shadow-md">
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
               {qualityBadges.map((b, i) => {
                 const Icon = b.icon;
@@ -556,15 +551,14 @@ export default function ProductDetail() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: i * 0.08 }}
                     whileHover={{ y: -3 }}
-                    className="flex flex-col items-center text-center gap-3 p-5 rounded-2xl bg-white/70 backdrop-blur-sm border border-white/80 shadow-sm hover:shadow-md transition-all cursor-default"
+                    className="flex flex-col items-center text-center gap-3 p-5 rounded-2xl bg-[#FAF6EE] border border-[#E4D9C5] shadow-xs hover:border-[#C8A45D] transition-all cursor-default"
                   >
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm"
-                      style={{ background: `linear-gradient(135deg, ${b.color}15 0%, ${b.color}08 100%)`, border: `1px solid ${b.color}25` }}>
-                      <Icon className="w-5 h-5" style={{ color: b.color }} />
+                    <div className="w-12 h-12 rounded-2xl bg-[#1F4D36]/10 border border-[#1F4D36]/20 flex items-center justify-center shadow-xs">
+                      <Icon className="w-5 h-5 text-[#1F4D36]" />
                     </div>
                     <div>
-                      <h4 className="font-sans text-[11px] font-bold text-[#1E2924] leading-tight">{b.title}</h4>
-                      <span className="font-sans text-[10px] text-[#6D7C58] font-light block mt-0.5">{b.desc}</span>
+                      <h4 className="font-sans text-xs font-bold text-[#1F4D36] leading-tight">{b.title}</h4>
+                      <span className="font-sans text-[10px] text-[#52665A] font-medium block mt-0.5">{b.desc}</span>
                     </div>
                   </motion.div>
                 );
@@ -582,19 +576,18 @@ export default function ProductDetail() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.65 }}
-            className="rounded-[28px] overflow-hidden bg-white border border-[#174B38]/10 shadow-[0_4px_40px_rgba(23,75,56,0.07)]"
+            className="rounded-[28px] overflow-hidden bg-[#FFFDF9] border border-[#C8A45D]/30 shadow-[0_6px_30px_rgba(31,77,54,0.06)]"
           >
             {/* Header */}
-            <div className="px-8 sm:px-10 py-7 border-b border-[#174B38]/8"
-              style={{ background: 'linear-gradient(135deg, #174B38 0%, #0F3326 100%)' }}>
-              <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#C7A66A] uppercase block mb-1">
+            <div className="px-8 sm:px-10 py-7 bg-[#1F4D36] border-b border-[#C8A45D]/30">
+              <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#F5C842] uppercase block mb-1">
                 Technical Specifications
               </span>
-              <h2 className="font-serif text-2xl sm:text-3xl text-white font-normal">Product Details</h2>
+              <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold">Product Details</h2>
             </div>
 
             {/* Spec rows */}
-            <div className="divide-y divide-[#174B38]/6">
+            <div className="divide-y divide-[#C8A45D]/20">
               {specDetails.map((spec, i) => (
                 <motion.div
                   key={spec.label}
@@ -602,12 +595,12 @@ export default function ProductDetail() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
-                  className="flex items-start justify-between gap-6 px-8 sm:px-10 py-5 hover:bg-[#F8F5ED]/50 transition-colors"
+                  className="flex items-start justify-between gap-6 px-8 sm:px-10 py-5 hover:bg-[#FAF6EE]/80 transition-colors"
                 >
-                  <span className="font-sans text-[11px] uppercase tracking-wider text-[#6D7C58] font-bold w-1/3 shrink-0 pt-0.5">
+                  <span className="font-sans text-xs uppercase tracking-wider text-[#C8A45D] font-bold w-1/3 shrink-0 pt-0.5">
                     {spec.label}
                   </span>
-                  <span className="font-sans text-sm text-[#1E2924] font-medium text-right flex-1">
+                  <span className="font-sans text-sm text-[#1F4D36] font-semibold text-right flex-1">
                     {spec.value}
                   </span>
                 </motion.div>
@@ -625,38 +618,35 @@ export default function ProductDetail() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.65 }}
-            className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(23,75,56,0.25)]"
-            style={{ background: 'linear-gradient(135deg, #0d3322 0%, #174B38 45%, #1d5e45 100%)' }}
+            className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(31,77,54,0.2)] bg-[#0E291C] border border-[#C8A45D]/40"
           >
             {/* Decorative rings */}
             <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full border border-white/5 pointer-events-none" />
             <div className="absolute -top-10 -right-10 w-56 h-56 rounded-full border border-white/5 pointer-events-none" />
             <div className="absolute -bottom-24 -left-12 w-72 h-72 rounded-full border border-white/5 pointer-events-none" />
             {/* Gold shimmer stripe */}
-            <div className="absolute top-0 left-0 right-0 h-px"
-              style={{ background: 'linear-gradient(90deg, transparent, rgba(199,166,106,0.6), transparent)' }} />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C8A45D] to-transparent" />
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-8 sm:p-12 lg:p-14">
               {/* Text */}
               <div className="lg:col-span-7 space-y-5">
-                <span className="font-sans text-[10px] tracking-[0.35em] text-[#C7A66A] uppercase font-bold">
+                <span className="font-sans text-[11px] tracking-[0.35em] text-[#C8A45D] uppercase font-bold">
                   Sustainable Excellence
                 </span>
-                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal leading-tight text-white">
+                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-white">
                   Crafted by<br />
-                  <span className="text-[#C7A66A]">Nature</span>
+                  <span className="text-[#F5C842]">Nature</span>
                 </h2>
-                <p className="font-sans text-[15px] font-light text-white/80 leading-relaxed max-w-xl">
+                <p className="font-sans text-[15px] font-normal text-white/85 leading-relaxed max-w-xl">
                   Thoughtfully made from naturally fallen areca leaves — every plate is heat-pressed without synthetic glues, plastics, or chemical coatings. Pure nature, refined by craft.
                 </p>
 
-                <div className="flex flex-wrap items-center gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-3.5 pt-2">
                   <a
                     href={whatsappProductLink(product.name)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-sans text-xs tracking-widest uppercase font-bold transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
-                    style={{ background: 'linear-gradient(135deg, #C7A66A, #B8924A)', color: '#1E2924' }}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-sans text-xs tracking-widest uppercase font-bold transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg bg-[#C8A45D] hover:bg-[#F5C842] text-[#0E291C]"
                   >
                     Request Bulk Quote
                   </a>
@@ -664,9 +654,9 @@ export default function ProductDetail() {
                     href={whatsappProductLink(product.name)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-sans text-xs tracking-widest uppercase font-bold text-white border border-white/25 hover:bg-white/10 transition-all"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-sans text-xs tracking-widest uppercase font-bold text-white bg-[#1F4D36] hover:bg-[#C8A45D] hover:text-[#1F4D36] border border-[#1F4D36] transition-all shadow-md"
                   >
-                    <MessageCircle className="w-3.5 h-3.5" />
+                    <MessageCircle className="w-4 h-4" />
                     WhatsApp Us
                   </a>
                 </div>
@@ -676,9 +666,8 @@ export default function ProductDetail() {
               <div className="lg:col-span-5 flex justify-center">
                 <div className="relative w-full max-w-[260px] aspect-square">
                   {/* Glow ring */}
-                  <div className="absolute inset-0 rounded-full bg-[#C7A66A]/15 blur-2xl scale-110 pointer-events-none" />
-                  <div className="relative w-full h-full rounded-[24px] overflow-hidden border border-white/20 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]"
-                    style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}>
+                  <div className="absolute inset-0 rounded-full bg-[#C8A45D]/20 blur-2xl scale-110 pointer-events-none" />
+                  <div className="relative w-full h-full rounded-[24px] overflow-hidden border border-[#C8A45D]/40 p-3 shadow-2xl bg-black/30 backdrop-blur-md">
                     <img
                       src={mainImg}
                       alt={`${product.name} — Natural Areca Leafware`}
@@ -686,8 +675,7 @@ export default function ProductDetail() {
                     />
                   </div>
                   {/* Floating badge */}
-                  <div className="absolute -bottom-3 -right-3 px-3 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-wider uppercase shadow-lg"
-                    style={{ background: 'linear-gradient(135deg, #C7A66A, #B8924A)', color: '#1E2924' }}>
+                  <div className="absolute -bottom-3 -right-3 px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-wider uppercase shadow-lg bg-[#C8A45D] text-[#0E291C]">
                     100% Natural
                   </div>
                 </div>
@@ -708,14 +696,14 @@ export default function ProductDetail() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#C7A66A] uppercase block mb-2">
+              <span className="font-sans text-[10px] font-bold tracking-[0.3em] text-[#C8A45D] uppercase block mb-2">
                 Explore Catalogue
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#1E2924] font-normal">You May Also Like</h2>
+              <h2 className="font-serif text-3xl sm:text-4xl text-[#1F4D36] font-bold">You May Also Like</h2>
               <div className="flex items-center justify-center gap-2 mt-3">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#C7A66A]/50" />
-                <div className="w-1.5 h-1.5 rounded-full bg-[#C7A66A]/60" />
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#C7A66A]/50" />
+                <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#C8A45D]/60" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#C8A45D]" />
+                <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#C8A45D]/60" />
               </div>
             </motion.div>
 
@@ -729,16 +717,15 @@ export default function ProductDetail() {
       </div>
 
       {/* ── Mobile Sticky CTA ── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-white/95 backdrop-blur-xl border-t border-[#174B38]/12 shadow-[0_-8px_24px_rgba(23,75,56,0.12)]">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-[#FAF3E8]/98 backdrop-blur-xl border-t border-[#C8A45D]/30 shadow-[0_-8px_24px_rgba(31,77,54,0.15)]">
         <a
           href={whatsappProductLink(product.name)}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-2.5 px-5 py-4 rounded-full font-sans text-[11px] tracking-[0.2em] uppercase font-bold text-white shadow-[0_8px_24px_rgba(23,75,56,0.3)] active:scale-[0.97] transition-transform"
-          style={{ background: 'linear-gradient(135deg, #174B38 0%, #0F3326 100%)' }}
+          className="w-full inline-flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-full font-sans text-xs tracking-widest uppercase font-bold text-white bg-[#1F4D36] hover:bg-[#C8A45D] hover:text-[#1F4D36] border border-[#1F4D36] shadow-md transition-all active:scale-[0.97]"
         >
-          <MessageCircle className="w-4 h-4" />
-          Enquire on WhatsApp
+          <MessageCircle className="w-4.5 h-4.5 text-white" />
+          <span>Enquire on WhatsApp</span>
         </a>
       </div>
     </div>

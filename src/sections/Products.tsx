@@ -53,13 +53,13 @@ export default function Products() {
 
         {/* Category Tabs */}
         {!loading && !error && categories.length > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-10 mb-6">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-10 mb-6">
             <button
               onClick={() => setSelectedCatId('all')}
-              className={`px-5 py-2.5 rounded-full font-sans text-xs font-semibold transition-all shadow-xs ${
+              className={`px-5 py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                 selectedCatId === 'all'
-                  ? 'bg-[#1F4D36] text-white shadow-md'
-                  : 'bg-white text-[#1F4D36] border border-[#1F4D36]/15 hover:bg-[#F5E6C8]'
+                  ? 'bg-[#1F4D36] text-white shadow-md border border-[#C8A45D]'
+                  : 'bg-white/80 text-[#1F4D36] border border-[#1F4D36]/20 hover:bg-[#F5E6C8] hover:border-[#C8A45D]'
               }`}
             >
               All Products ({products.length})
@@ -71,10 +71,10 @@ export default function Products() {
                 <button
                   key={id}
                   onClick={() => setSelectedCatId(id)}
-                  className={`px-5 py-2.5 rounded-full font-sans text-xs font-semibold transition-all shadow-xs ${
+                  className={`px-5 py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                     isSelected
-                      ? 'bg-[#1F4D36] text-white shadow-md'
-                      : 'bg-white text-[#1F4D36] border border-[#1F4D36]/15 hover:bg-[#F5E6C8]'
+                      ? 'bg-[#1F4D36] text-white shadow-md border border-[#C8A45D]'
+                      : 'bg-white/80 text-[#1F4D36] border border-[#1F4D36]/20 hover:bg-[#F5E6C8] hover:border-[#C8A45D]'
                   }`}
                 >
                   {cat.name}
@@ -111,8 +111,30 @@ export default function Products() {
         )}
 
         {!loading && !error && filteredProducts.length === 0 && (
-          <div className="mt-12 text-center py-16 bg-white rounded-3xl border border-[#1F4D36]/15">
-            <p className="font-sans text-sm text-[#64748B]">No products currently available in this category.</p>
+          <div className="mt-12 text-center py-16 px-6 bg-white/90 backdrop-blur-md rounded-3xl border border-[#C8A45D]/30 shadow-md max-w-2xl mx-auto">
+            <div className="w-14 h-14 rounded-full bg-[#FAF3E8] border border-[#C8A45D]/40 text-[#1F4D36] flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-7 h-7 text-[#C8A45D]" />
+            </div>
+            <h3 className="font-serif text-xl font-bold text-[#1F4D36] mb-2">No Products Uploaded Yet</h3>
+            <p className="font-sans text-sm text-[#52665A] mb-6 max-w-md mx-auto">
+              The product catalogue is clean and ready. Login to the Admin Dashboard to add your export products, or contact us directly on WhatsApp for full catalogue details.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="/admin"
+                className="px-6 py-3 rounded-full bg-[#1F4D36] text-white font-sans text-xs font-bold uppercase tracking-wider shadow-md hover:bg-[#163827] transition-all"
+              >
+                Go to Admin Dashboard
+              </a>
+              <a
+                href="https://wa.me/918270839507?text=Hello%20Sharmila%20Leafware,%20I%20want%20to%20inquire%20about%20your%20products."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-full bg-[#25D366] text-white font-sans text-xs font-bold uppercase tracking-wider shadow-md hover:bg-[#20ba5a] transition-all flex items-center gap-2"
+              >
+                Inquire on WhatsApp
+              </a>
+            </div>
           </div>
         )}
       </div>

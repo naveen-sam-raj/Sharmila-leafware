@@ -1,34 +1,49 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Leaf, Phone } from 'lucide-react';
+import { Menu, Leaf, MessageCircle } from 'lucide-react';
 import { whatsappLink } from '@/lib/whatsapp';
 
 const NAV_LINKS = [
-  { label: 'Home', to: '/' },
-  { label: 'About', to: '/#about' },
-  { label: 'Products', to: '/#products' },
-  { label: 'Why Us', to: '/#why' },
-  { label: 'Quality', to: '/#quality' },
-  { label: 'Export', to: '/#export' },
-  { label: 'Contact', to: '/#contact' },
+  { label: 'Home', to: '/', id: 'home' },
+  { label: 'About', to: '/#about', id: 'about' },
+  { label: 'Products', to: '/#products', id: 'products' },
+  { label: 'Why Us', to: '/#why', id: 'why' },
+  { label: 'Quality', to: '/#quality', id: 'quality' },
+  { label: 'Export', to: '/#export', id: 'export' },
+  { label: 'Contact', to: '/#contact', id: 'contact' },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const location = useLocation();
   const prevPath = useRef(location.pathname);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 30);
+
+      // Section scrollSpy logic for home page
+      if (location.pathname === '/') {
+        const sections = ['contact', 'export', 'quality', 'why', 'products', 'about'];
+        const scrollPos = window.scrollY + 180;
+        let current = 'home';
+        for (const section of sections) {
+          const el = document.getElementById(section);
+          if (el && el.offsetTop <= scrollPos) {
+            current = section;
+            break;
+          }
+        }
+        setActiveSection(current);
+      }
+    };
+
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [location]);
+  }, [location.pathname]);
 
   // Handle hash navigation on route change
   useEffect(() => {
@@ -61,121 +76,171 @@ export default function Navbar() {
     }
   };
 
+  const isLinkActive = (link: typeof NAV_LINKS[0]) => {
+    if (location.pathname !== '/') {
+      return location.pathname === link.to;
+    }
+    return activeSection === link.id;
+  };
+
   return (
     <>
+      {/* Dark backdrop overlay when mobile menu is open -- clicking it only closes menu */}
+      <div
+        className={`fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ${
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setMobileOpen(false)}
+      >
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      </div>
+
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'bg-[#FAF3E8]/95 backdrop-blur-xl border-b border-[#1F4D36]/15 py-3 shadow-md'
-            : 'bg-gradient-to-b from-black/60 to-transparent py-5'
+            ? 'bg-[#FAF3E8]/98 backdrop-blur-xl shadow-[0_4px_25px_rgba(31,77,54,0.08)]'
+            : 'bg-gradient-to-b from-black/90 via-black/60 to-transparent'
         }`}
       >
-        <nav className="section-padding flex items-center justify-between max-w-7xl mx-auto">
-          {/* Official Transparent Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center shrink-0 group focus:outline-none" 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            <div className={`relative flex items-center justify-center p-1.5 rounded-full border transition-all duration-300 ${
-              scrolled 
-                ? 'border-[#C8A45D]/60 bg-white/50 shadow-sm group-hover:border-[#C8A45D] group-hover:shadow-md' 
-                : 'border-[#C8A45D]/70 bg-black/20 backdrop-blur-md shadow-sm group-hover:border-[#C8A45D] group-hover:bg-black/35'
-            }`}>
-              <img 
-                src="/logo-transparent.png" 
-                alt="Sharmila Leafware Logo" 
-                className="h-[60px] w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-sm" 
-              />
-            </div>
-          </Link>
-
-          {/* Desktop Nav Links */}
-          <ul className="hidden lg:flex items-center gap-8">
-            {NAV_LINKS.map((link) => (
-              <li key={link.label}>
-                <Link
-                  to={link.to}
-                  onClick={(e) => handleNavClick(e, link.to)}
-                  className={`relative font-sans text-sm font-medium tracking-wide transition-colors duration-300 group py-1 ${
-                    scrolled ? 'text-[#1F4D36] hover:text-[#C8A45D]' : 'text-white/90 hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#C8A45D] transition-all duration-300 group-hover:w-full" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* WhatsApp Pill CTA Button & Mobile Toggle */}
-          <div className="flex items-center gap-4">
-            <a
-              href={whatsappLink('Hello Sharmila Leafware, I would like to inquire about your Areca Leaf tableware.')}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider text-white bg-[#17A589] hover:bg-[#138d75] transition-all duration-300 shadow-md hover:scale-105"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-              WhatsApp
-            </a>
-
-            {/* Mobile toggle */}
-            <button
-              className={`lg:hidden p-2 rounded-lg border ${
-                scrolled ? 'text-[#1F4D36] bg-[#F5E6C8] border-[#1F4D36]/20' : 'text-white bg-black/30 border-white/30 backdrop-blur-md'
-              }`}
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </nav>
-      </header>
-
-      {/* Mobile menu */}
-      <div
-        className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${
-          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="absolute inset-0 bg-black/90 backdrop-blur-2xl" onClick={() => setMobileOpen(false)} />
-        <div className="relative flex flex-col items-center justify-center h-full gap-3.5 px-6 pt-12 pb-8">
-          {NAV_LINKS.map((link, i) => (
+        {/* Main Header Bar */}
+        <div className="py-3.5 sm:py-5">
+          <nav className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between">
+            {/* Logo with Brand Name */}
             <Link
-              key={link.label}
-              to={link.to}
-              onClick={(e) => handleNavClick(e, link.to)}
-              className="font-serif text-2xl font-bold text-white hover:text-[#F5C842] transition-colors duration-300 py-0.5 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-              style={{
-                opacity: mobileOpen ? 1 : 0,
-                transform: mobileOpen ? 'translateY(0)' : 'translateY(15px)',
-                transition: `opacity 0.35s ease ${i * 0.05}s, transform 0.35s ease ${i * 0.05}s, color 0.3s`,
+              to="/"
+              className="flex items-center gap-2.5 sm:gap-3 shrink-0 group focus:outline-none"
+              onClick={() => {
+                setMobileOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >
-              {link.label}
+              <div
+                className={`relative flex items-center justify-center p-1 sm:p-1.5 rounded-full border transition-all duration-300 ${
+                  scrolled
+                    ? 'border-[#C8A45D]/80 bg-white/60 shadow-sm group-hover:border-[#C8A45D]'
+                    : 'border-[#C8A45D]/80 bg-black/30 backdrop-blur-md shadow-sm group-hover:border-[#C8A45D]'
+                }`}
+              >
+                <img
+                  src="/logo-transparent.png"
+                  alt="Sharmila Leafware Logo"
+                  className="h-[40px] sm:h-[50px] w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-sm"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className={`font-serif font-bold text-sm sm:text-base tracking-widest leading-none transition-colors duration-300 ${
+                    scrolled ? 'text-[#1F4D36] group-hover:text-[#C8A45D]' : 'text-white group-hover:text-[#F5C842]'
+                  }`}
+                >
+                  SHARMILA
+                </span>
+                <span className="font-sans text-[8px] sm:text-[9px] font-semibold tracking-[0.26em] text-[#C8A45D] uppercase mt-0.5">
+                  Leafware
+                </span>
+              </div>
             </Link>
-          ))}
 
-          <a
-            href={whatsappLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-sans text-xs font-bold uppercase tracking-wider text-white bg-[#17A589] hover:bg-[#138d75] shadow-lg transition-all active:scale-95"
-            style={{
-              opacity: mobileOpen ? 1 : 0,
-              transform: mobileOpen ? 'translateY(0)' : 'translateY(15px)',
-              transition: `opacity 0.35s ease ${NAV_LINKS.length * 0.05}s, transform 0.35s ease ${NAV_LINKS.length * 0.05}s`,
-            }}
-          >
-            Enquire Now
-          </a>
+            {/* Desktop Nav Links */}
+            <ul className="hidden lg:flex items-center gap-7 xl:gap-9">
+              {NAV_LINKS.map((link) => {
+                const active = isLinkActive(link);
+                return (
+                  <li key={link.label}>
+                    <Link
+                      to={link.to}
+                      onClick={(e) => handleNavClick(e, link.to)}
+                      className={`relative font-sans text-xs font-semibold uppercase tracking-wider transition-colors duration-300 py-1.5 group flex items-center gap-1 ${
+                        scrolled
+                          ? active
+                            ? 'text-[#1F4D36]'
+                            : 'text-[#1F4D36]/80 hover:text-[#C8A45D]'
+                          : active
+                          ? 'text-white'
+                          : 'text-white/80 hover:text-white'
+                      }`}
+                    >
+                      {link.label}
+                      <span
+                        className={`absolute bottom-0 left-0 h-0.5 bg-[#C8A45D] transition-all duration-300 ${
+                          active ? 'w-full' : 'w-0 group-hover:w-full'
+                        }`}
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Right Action: WhatsApp CTA & Mobile 3-Lines Menu Icon */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <a
+                href={whatsappLink('Hello Sharmila Leafware, I would like to inquire about your Areca Leaf tableware.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-full font-sans text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white bg-[#1F4D36] hover:bg-[#C8A45D] hover:text-[#1F4D36] transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 border border-[#1F4D36] group shrink-0"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-300" />
+                </span>
+                <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white group-hover:text-[#1F4D36] group-hover:rotate-12 transition-transform duration-300" />
+                <span className="font-bold">WhatsApp</span>
+              </a>
+
+              {/* Mobile 3-Line Hamburger Menu Button */}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Toggle menu"
+                className={`lg:hidden p-2 rounded-xl border transition-all duration-300 focus:outline-none ${
+                  mobileOpen
+                    ? 'bg-[#C8A45D] text-[#0E291C] border-[#C8A45D] shadow-md'
+                    : scrolled
+                    ? 'text-[#1F4D36] bg-[#F5E6C8] border-[#1F4D36]/20 hover:bg-[#1F4D36] hover:text-white'
+                    : 'text-white bg-black/40 border-white/30 backdrop-blur-md hover:bg-black/60'
+                }`}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
+          </nav>
         </div>
-      </div>
+
+        {/* Mobile Half-Width Compact Dropdown Menu (No full horizontal screen, No arrows!) */}
+        <div
+          className={`lg:hidden transition-all duration-300 overflow-hidden px-4 ${
+            mobileOpen
+              ? 'max-h-[60vh] opacity-100 pb-4'
+              : 'max-h-0 opacity-0 pb-0 overflow-hidden pointer-events-none'
+          }`}
+        >
+          <div className="w-[60%] max-w-[220px] ml-auto bg-[#0E291C]/98 backdrop-blur-2xl border border-[#C8A45D]/40 rounded-2xl p-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.5)] flex flex-col gap-1">
+            {NAV_LINKS.map((link) => {
+              const active = isLinkActive(link);
+              return (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  onClick={(e) => {
+                    handleNavClick(e, link.to);
+                    setMobileOpen(false);
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl font-serif text-sm transition-all duration-300 ${
+                    active
+                      ? 'bg-[#C8A45D]/25 text-[#F5C842] font-bold border border-[#C8A45D]/50'
+                      : 'text-white/90 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {active && <Leaf className="w-3.5 h-3.5 text-[#F5C842] shrink-0" />}
+                  <span className="truncate">{link.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </header>
     </>
   );
 }
+
 

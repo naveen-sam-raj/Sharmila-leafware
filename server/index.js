@@ -70,57 +70,8 @@ const DEFAULT_CATEGORIES = [
   { name: 'Trays', slug: 'trays', status: 'active', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800' },
 ];
 
-// Initial Default Products
-const DEFAULT_PRODUCTS = [
-  {
-    name: '10 Inch Round Areca Leaf Plate',
-    slug: '10-inch-round-areca-leaf-plate',
-    categorySlug: 'round-plates',
-    subCategory: 'Dinnerware',
-    size: '10 Inch',
-    shape: 'Round',
-    description: 'Premium quality natural areca leaf plate suitable for functions, catering and food service. 100% biodegradable and heat resistant.',
-    thumbnail: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800',
-    images: ['https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800'],
-    status: 'active'
-  },
-  {
-    name: '9 Inch Square Areca Leaf Plate',
-    slug: '9-inch-square-areca-leaf-plate',
-    categorySlug: 'square-plates',
-    subCategory: 'Dinnerware',
-    size: '9 Inch',
-    shape: 'Square',
-    description: 'Modern square-shaped areca palm leaf plate. Eco-friendly, chemical-free and leak proof.',
-    thumbnail: 'https://images.unsplash.com/photo-1615865417236-d67f5799a4ec?auto=format&fit=crop&q=80&w=800',
-    images: ['https://images.unsplash.com/photo-1615865417236-d67f5799a4ec?auto=format&fit=crop&q=80&w=800'],
-    status: 'active'
-  },
-  {
-    name: '4-Compartment Buffet Serving Tray',
-    slug: '4-compartment-buffet-serving-tray',
-    categorySlug: 'compartment-plates',
-    subCategory: 'Buffetware',
-    size: '12x10 Inch',
-    shape: 'Rectangle',
-    description: 'Heavy duty 4-compartment tray designed to separate gravies, rice, condiments, and sweets.',
-    thumbnail: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800',
-    images: ['https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800'],
-    status: 'active'
-  },
-  {
-    name: '6 Inch Deep Soup & Salad Bowl',
-    slug: '6-inch-deep-soup-salad-bowl',
-    categorySlug: 'bowls',
-    subCategory: 'Bowls',
-    size: '6 Inch',
-    shape: 'Round',
-    description: 'Deep natural leaf bowl for hot soups, salads, ice creams, and desserts.',
-    thumbnail: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
-    images: ['https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800'],
-    status: 'active'
-  }
-];
+// Initial Default Products (Empty for clean real product uploads)
+const DEFAULT_PRODUCTS = [];
 
 // Initial Default Gallery Items
 const DEFAULT_GALLERY = [

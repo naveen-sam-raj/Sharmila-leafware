@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react';
 import { fetchCategories, createProduct } from '@/lib/api';
 import type { Category } from '@/types';
-import ImageUploader from '@/components/admin/ImageUploader';
+import ImageUploader, { type ImageItem as UploadedImage } from '@/components/admin/ImageUploader';
 
 export default function AdminAddProduct() {
   const navigate = useNavigate();

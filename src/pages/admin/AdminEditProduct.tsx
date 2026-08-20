@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react';
 import { fetchCategories, fetchProductBySlug, updateProduct, deleteImageFromCloudinary } from '@/lib/api';
 import type { Category, Product } from '@/types';
-import ImageUploader from '@/components/admin/ImageUploader';
+import ImageUploader, { type ImageItem as UploadedImage } from '@/components/admin/ImageUploader';
 
 export default function AdminEditProduct() {
   const { id } = useParams<{ id: string }>();
