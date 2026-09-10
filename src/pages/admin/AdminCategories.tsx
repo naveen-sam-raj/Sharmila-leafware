@@ -133,7 +133,7 @@ export default function AdminCategories() {
         <div>
           <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Category Management</h1>
           <p className="font-sans text-xs text-[#64748B] mt-1">
-            Organize tableware product lines (Round Plates, Square Plates, Bowls, Trays, etc.)
+            Organize product lines for your Areca leaf tableware collections.
           </p>
         </div>
 
@@ -153,7 +153,7 @@ export default function AdminCategories() {
           <FolderTree className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
           <p className="font-sans text-sm text-[#64748B] mb-4">No categories found.</p>
           <button onClick={openAddModal} className="btn-primary-forest text-xs">
-            Add Default Categories
+            + Add New Category
           </button>
         </div>
       ) : (

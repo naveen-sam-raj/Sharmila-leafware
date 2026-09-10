@@ -1,167 +1,287 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe2, UtensilsCrossed, Hotel, Store, Boxes, ShoppingCart, Package, Tag, FileText } from 'lucide-react';
+import { 
+  Globe2, 
+  Send, 
+  MessageCircle, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Leaf, 
+  Recycle, 
+  PackageCheck, 
+  Handshake, 
+  Tag, 
+  ArrowRight,
+  Sparkles
+} from 'lucide-react';
 import SectionHeading from '@/components/SectionHeading';
+import ExportEnquiryModal from '@/components/ExportEnquiryModal';
 import { whatsappLink } from '@/lib/whatsapp';
 
-const CLIENTS = [
-  { icon: UtensilsCrossed, label: 'Restaurants' },
-  { icon: Hotel, label: 'Hotels & Resorts' },
-  { icon: Store, label: 'Distributors' },
-  { icon: Boxes, label: 'Wholesalers' },
-  { icon: ShoppingCart, label: 'Retail Chains' },
+// Key Highlights
+const HIGHLIGHTS = [
+  { icon: Leaf, label: 'Natural Areca Leaf Products', tag: '🌿 100% Pure Leaf' },
+  { icon: Recycle, label: 'Eco-Friendly & Biodegradable', tag: '♻️ Zero Plastic' },
+  { icon: PackageCheck, label: 'Bulk Wholesale Supply', tag: '📦 Wholesale' },
+  { icon: Globe2, label: 'International Buyer Enquiries', tag: '🌍 Global Support' },
+  { icon: Handshake, label: 'Distributor & Importer Partnerships', tag: '🤝 Partnerships' },
+  { icon: Tag, label: 'Private Label / OEM Enquiries', tag: '🏷️ OEM / Branding' },
 ];
 
-const SERVICES = [
-  { icon: Package, title: 'Bulk Container Orders', desc: 'Large-scale manufacturing capacity to fulfill FCL & LCL shipping demands.' },
-  { icon: Tag, title: 'OEM Manufacturing', desc: 'Manufacture customized specs tailored for your brand specs.' },
-  { icon: FileText, title: 'Private Labelling', desc: 'Custom brand packaging, barcode labelling, and market presentation.' },
-  { icon: FileText, title: 'Export Documentation', desc: 'Full export documentation — Phytosanitary certificate, Certificate of Origin, FDA compliance.' },
+// Product Range Chips
+const EXPORT_PRODUCTS = [
+  'Round Areca Leaf Plates',
+  'Square Areca Leaf Plates',
+  'Bowls',
+  'Heart Shape Bowls',
+  'Oval Plates',
+  'Areca Leaf Containers',
+  'Wooden Cutlery',
 ];
 
-const COUNTRIES = ['USA', 'UK', 'Germany', 'France', 'UAE', 'Australia', 'Singapore', 'Canada', 'Netherlands', 'Japan'];
+// 6 Export Process Steps
+const EXPORT_STEPS = [
+  { num: '01', title: 'Send Requirement' },
+  { num: '02', title: 'Product & Quantity Confirmation' },
+  { num: '03', title: 'Quotation' },
+  { num: '04', title: 'Order Confirmation' },
+  { num: '05', title: 'Packing & Dispatch' },
+  { num: '06', title: 'Shipping & Logistics' },
+];
 
 export default function Export() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(EXPORT_PRODUCTS[0]);
+
+  const handleOpenModal = (productName?: string) => {
+    if (productName) setSelectedProduct(productName);
+    setIsModalOpen(true);
+  };
+
   return (
-    <section id="export" className="relative py-24 lg:py-32 overflow-hidden bg-[#F5E6C8]">
-      <div className="section-padding relative z-10 max-w-7xl mx-auto">
+    <section id="export" className="relative py-14 lg:py-20 overflow-hidden bg-[#F5E6C8]">
+      <div className="section-padding relative z-10 max-w-6xl mx-auto">
+        {/* Section Heading */}
         <SectionHeading
-          eyebrow="Global Export"
-          title={<>Trusted Across <span className="gold-text">Continents</span></>}
-          subtitle="From our facility in Tamil Nadu to buyers worldwide, Sharmila Leafware serves restaurants, hotels, distributors, wholesalers, and retail chains across the globe."
+          eyebrow="GLOBAL EXPORT"
+          title={<>Bringing Natural Tableware from <span className="gold-text">India to the World</span></>}
+          subtitle="Premium Areca Leaf Tableware for International Buyers, Importers, Distributors & Bulk Customers."
         />
 
-        {/* World map representation box */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.8 }}
-          className="relative mt-16 mb-16"
-        >
-          <div className="relative max-w-4xl mx-auto aspect-[2/1] rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-md overflow-hidden flex items-center justify-center">
-            {/* Dotted map grid pattern */}
-            <div className="absolute inset-0 opacity-15" style={{
-              backgroundImage: `radial-gradient(circle, #1F4D36 1px, transparent 1px)`,
-              backgroundSize: '24px 24px',
-            }} />
+        {/* Compliant Wording Badges */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-4 mb-8 text-xs font-sans font-semibold text-[#1F4D36]">
+          <span className="px-3.5 py-1 rounded-full bg-white border border-[#1F4D36]/15 shadow-sm">
+            ✨ Export Enquiries Welcome
+          </span>
+          <span className="px-3.5 py-1 rounded-full bg-white border border-[#1F4D36]/15 shadow-sm">
+            🌍 International Buyers Welcome
+          </span>
+          <span className="px-3.5 py-1 rounded-full bg-white border border-[#1F4D36]/15 shadow-sm">
+            🤝 Open to Global Partnerships
+          </span>
+          <span className="px-3.5 py-1 rounded-full bg-white border border-[#1F4D36]/15 shadow-sm">
+            📦 Bulk Export Enquiries
+          </span>
+        </div>
 
-            {/* Connection arcs */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 400" fill="none">
-              <motion.path
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 2, delay: 0.3 }}
-                d="M400 200 Q250 100 150 150 Q100 200 200 250"
-                stroke="#1F4D36"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                opacity="0.4"
-              />
-              <motion.path
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 2, delay: 0.5 }}
-                d="M400 200 Q550 120 650 180 Q700 220 600 280"
-                stroke="#C8A45D"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                opacity="0.6"
-              />
-              <motion.path
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 2, delay: 0.7 }}
-                d="M400 200 Q450 300 500 320"
-                stroke="#1F4D36"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                opacity="0.4"
-              />
-            </svg>
-
-            {/* Center: India */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-[#C8A45D]/30 blur-2xl rounded-full scale-150" />
-                <div className="relative w-16 h-16 rounded-full bg-[#1F4D36] border-2 border-[#C8A45D] flex items-center justify-center shadow-lg">
-                  <Globe2 className="w-8 h-8 text-[#C8A45D]" strokeWidth={1.75} />
-                </div>
+        {/* Compact Highlights & Product Range Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+          {/* Box 1: Core Highlights */}
+          <div className="p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-md flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-[#C8A45D]" />
+                <h3 className="font-serif text-lg font-medium text-[#1F4D36]">Wholesale & Export Features</h3>
               </div>
-              <span className="mt-3 font-sans text-xs tracking-[0.25em] font-bold text-[#1F4D36] uppercase">India Port Hub</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {HIGHLIGHTS.map((item) => (
+                  <div key={item.label} className="p-2.5 rounded-xl bg-[#FAF3E8] border border-[#1F4D36]/10 flex items-center gap-2.5">
+                    <item.icon className="w-4 h-4 text-[#1F4D36] shrink-0" />
+                    <span className="font-sans text-xs font-medium text-[#1F4D36] leading-tight">{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Countries served pills */}
-          <div className="flex flex-wrap justify-center gap-2.5 mt-8">
-            {COUNTRIES.map((country, i) => (
-              <motion.span
-                key={country}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
-                className="px-4 py-2 rounded-full bg-white text-xs font-sans font-medium text-[#1F4D36] border border-[#1F4D36]/15 shadow-sm"
-              >
-                {country}
-              </motion.span>
+          {/* Box 2: Export Product Range */}
+          <div className="p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-md flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Globe2 className="w-4 h-4 text-[#C8A45D]" />
+                  <h3 className="font-serif text-lg font-medium text-[#1F4D36]">Export Product Range</h3>
+                </div>
+                <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#C8A45D]">Bulk Supply</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {EXPORT_PRODUCTS.map((prod) => (
+                  <button
+                    key={prod}
+                    onClick={() => handleOpenModal(prod)}
+                    className="px-3 py-1.5 rounded-xl bg-[#FAF3E8] hover:bg-[#1F4D36] text-[#1F4D36] hover:text-white border border-[#1F4D36]/15 text-xs font-sans font-medium transition-colors flex items-center gap-1 group"
+                  >
+                    <span>{prod}</span>
+                    <ArrowRight className="w-3 h-3 text-[#C8A45D] group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="font-sans text-[11px] text-[#475569] font-light">
+              Direct container dispatch from VOC Port, Thoothukudi, Tamil Nadu, India.
+            </p>
+          </div>
+        </div>
+
+        {/* Compact 6-Step Export Process Stepper */}
+        <div className="p-5 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-md mb-8">
+          <div className="text-center mb-4">
+            <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-[#C8A45D] uppercase">Workflow</span>
+            <h4 className="font-serif text-base text-[#1F4D36] font-medium">Export Process (6 Steps)</h4>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center">
+            {EXPORT_STEPS.map((s) => (
+              <div key={s.num} className="p-2.5 rounded-xl bg-[#FAF3E8] border border-[#1F4D36]/10 flex flex-col items-center justify-center">
+                <span className="font-serif text-sm font-bold text-[#C8A45D] mb-0.5">{s.num}</span>
+                <span className="font-sans text-[11px] font-medium text-[#1F4D36] leading-tight">{s.title}</span>
+              </div>
             ))}
           </div>
-        </motion.div>
-
-        {/* Client types */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-16">
-          {CLIENTS.map((client, i) => (
-            <motion.div
-              key={client.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="flex flex-col items-center gap-3 p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#C8A45D] hover:shadow-md transition-all duration-300"
-            >
-              <client.icon className="w-8 h-8 text-[#1F4D36]" strokeWidth={1.6} />
-              <span className="font-sans text-sm font-medium text-[#1F4D36]">{client.label}</span>
-            </motion.div>
-          ))}
         </div>
 
-        {/* Services */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SERVICES.map((service, i) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="group p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#C8A45D] hover:shadow-xl hover:-translate-y-1 transition-all duration-400"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#FAF3E8] border border-[#1F4D36]/20 flex items-center justify-center mb-4 group-hover:bg-[#1F4D36] transition-all duration-300">
-                <service.icon className="w-6 h-6 text-[#1F4D36] group-hover:text-[#C8A45D] transition-colors" strokeWidth={1.6} />
-              </div>
-              <h3 className="font-serif text-xl text-[#1F4D36] mb-2 font-medium">{service.title}</h3>
-              <p className="font-sans text-sm font-light text-[#475569] leading-relaxed">{service.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* CTA */}
+        {/* International Buyers Callout Banner & CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mt-16"
+          transition={{ duration: 0.5 }}
+          className="relative rounded-[28px] bg-gradient-to-br from-[#1F4D36] via-[#143B28] to-[#0E291C] text-white p-6 sm:p-10 shadow-xl overflow-hidden border border-[#C8A45D]/30 text-center"
         >
-          <a href={whatsappLink('Hello Sharmila Leafware, I would like to inquire about starting an export order.')} target="_blank" rel="noopener noreferrer" className="btn-primary-forest">
-            Start Export Enquiry
-          </a>
+          <div className="relative z-10 max-w-2xl mx-auto space-y-4">
+            <span className="inline-block px-3.5 py-1 rounded-full bg-white/10 border border-[#C8A45D]/40 text-[#C8A45D] text-[10px] font-sans font-bold uppercase tracking-[0.2em]">
+              International Buyers
+            </span>
+
+            <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-medium text-white leading-tight">
+              “Looking for a reliable Indian supplier of eco-friendly disposable tableware?”
+            </h3>
+
+            <p className="font-sans text-xs sm:text-sm text-white/80 font-light leading-relaxed">
+              “Connect with Sharmila Leafware for bulk requirements, product specifications, pricing and export enquiries.”
+            </p>
+
+            {/* CTAs */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => handleOpenModal()}
+                className="btn-primary-forest w-full sm:w-auto px-7 py-3 bg-[#C8A45D] hover:bg-white text-[#1F4D36] border-[#C8A45D] font-bold text-xs tracking-wider shadow-md flex items-center justify-center gap-2"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>ENQUIRE FOR EXPORT</span>
+              </button>
+
+              <a
+                href={whatsappLink('Hello Sharmila Leafware, I would like to inquire about international bulk export options.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary-forest w-full sm:w-auto px-7 py-3 bg-white/10 hover:bg-white text-white hover:text-[#1F4D36] border-white/30 hover:border-white font-bold text-xs tracking-wider shadow-sm flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
+                <span>CONTACT ON WHATSAPP</span>
+              </a>
+            </div>
+
+            {/* Direct Contact Channels Grid */}
+            <div className="pt-6 border-t border-white/15">
+              <span className="block font-sans text-[10px] font-bold tracking-[0.2em] text-[#C8A45D] uppercase mb-3 text-center">
+                Direct Export Contact Details
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+                {/* WhatsApp */}
+                <a
+                  href={whatsappLink('Hello Sharmila Leafware, I would like to inquire about international bulk export options.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-[#C8A45D] transition-all flex items-center gap-3 shadow-sm backdrop-blur-sm group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-[#25D366]/20 border border-[#25D366]/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block font-sans text-[9px] font-bold tracking-wider text-[#C8A45D] uppercase leading-tight">
+                      WhatsApp
+                    </span>
+                    <span className="font-sans text-xs font-semibold text-white truncate block">
+                      +91 82708 39507
+                    </span>
+                  </div>
+                </a>
+
+                {/* Mobile */}
+                <a
+                  href="tel:+919943269660"
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-[#C8A45D] transition-all flex items-center gap-3 shadow-sm backdrop-blur-sm group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-[#C8A45D]/20 border border-[#C8A45D]/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Phone className="w-4 h-4 text-[#C8A45D]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block font-sans text-[9px] font-bold tracking-wider text-[#C8A45D] uppercase leading-tight">
+                      Mobile
+                    </span>
+                    <span className="font-sans text-xs font-semibold text-white truncate block">
+                      +91 99432 69660
+                    </span>
+                  </div>
+                </a>
+
+                {/* Email */}
+                <a
+                  href="mailto:sharmilaleafware@gmail.com"
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-[#C8A45D] transition-all flex items-center gap-3 shadow-sm backdrop-blur-sm group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Mail className="w-4 h-4 text-sky-300" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block font-sans text-[9px] font-bold tracking-wider text-[#C8A45D] uppercase leading-tight">
+                      Email
+                    </span>
+                    <span className="font-sans text-xs font-semibold text-white truncate block">
+                      sharmilaleafware@gmail.com
+                    </span>
+                  </div>
+                </a>
+
+                {/* Location */}
+                <div className="p-3 rounded-2xl bg-white/10 border border-white/15 flex items-center gap-3 shadow-sm backdrop-blur-sm">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-emerald-300" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block font-sans text-[9px] font-bold tracking-wider text-[#C8A45D] uppercase leading-tight">
+                      Location
+                    </span>
+                    <span className="font-sans text-xs font-semibold text-white truncate block">
+                      Thoothukudi, TN, India
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
+
+      {/* Export Enquiry Modal Dialog */}
+      <ExportEnquiryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        defaultProduct={selectedProduct}
+      />
     </section>
   );
 }
-

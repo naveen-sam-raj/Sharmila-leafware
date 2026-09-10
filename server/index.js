@@ -60,15 +60,8 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Initial Default Categories
-const DEFAULT_CATEGORIES = [
-  { name: 'Round Plates', slug: 'round-plates', status: 'active', image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Square Plates', slug: 'square-plates', status: 'active', image: 'https://images.unsplash.com/photo-1615865417236-d67f5799a4ec?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Rectangle Plates', slug: 'rectangle-plates', status: 'active', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Compartment Plates', slug: 'compartment-plates', status: 'active', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Bowls', slug: 'bowls', status: 'active', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Trays', slug: 'trays', status: 'active', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800' },
-];
+// Initial Default Categories (Empty for clean admin-managed categories)
+const DEFAULT_CATEGORIES = [];
 
 // Initial Default Products (Empty for clean real product uploads)
 const DEFAULT_PRODUCTS = [];

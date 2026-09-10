@@ -5,8 +5,8 @@ export default function ExportPage() {
   return (
     <>
       <SEO
-        title="Areca Leaf Plate Exporter from India | Sharmila Leafware"
-        description="Global exporter of Areca palm leaf disposable tableware. Shipping bulk container orders to North America, Europe, Middle East, and Australia."
+        title="Global Export & Bulk Supply | Areca Leaf Tableware | Sharmila Leafware India"
+        description="Sharmila Leafware is an India-based wholesale supplier of natural areca leaf tableware. Open to international bulk enquiries, importer partnerships & custom OEM private label export orders."
         canonicalUrl="https://sharmilaleafware.com/export"
       />
       <div className="pt-8">

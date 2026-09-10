@@ -116,9 +116,14 @@ export default function AdminLayout() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="relative w-72 max-w-[82vw] h-full bg-[#FAF3E8] flex flex-col p-5 shadow-2xl overflow-y-auto">
+          <aside className="relative w-72 max-w-[85vw] h-full bg-[#FAF3E8] flex flex-col p-5 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#174B38]/10">
-              <img src="/sharmila-logo.jpg" alt="Sharmila Leafware Logo" className="w-24 h-auto object-contain" />
+              <div>
+                <img src="/sharmila-logo.jpg" alt="Sharmila Leafware Logo" className="w-24 h-auto object-contain" />
+                <span className="text-[9px] font-bold tracking-wider text-[#6D7C58] uppercase block mt-1">
+                  Admin System
+                </span>
+              </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-2 rounded-xl text-[#174B38] hover:bg-[#F3EFE3]"
@@ -127,7 +132,8 @@ export default function AdminLayout() {
               </button>
             </div>
 
-            <nav className="space-y-1 flex-1">
+            {/* Mobile Nav Links */}
+            <nav className="space-y-1 flex-1 overflow-y-auto py-1">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
                 return (
@@ -146,13 +152,34 @@ export default function AdminLayout() {
               })}
             </nav>
 
-            <div className="pt-4 mt-auto border-t border-[#174B38]/10">
+            {/* Mobile Drawer Footer Actions */}
+            <div className="pt-4 mt-auto border-t border-[#174B38]/10 space-y-3">
+              <Link
+                to="/"
+                target="_blank"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-[#174B38] bg-white border border-[#174B38]/15 hover:bg-[#F3EFE3] transition-all"
+              >
+                <ExternalLink className="w-4 h-4 text-[#174B38]" />
+                View Storefront
+              </Link>
+
+              <div className="flex items-center gap-2.5 p-2 bg-white/60 rounded-xl border border-[#174B38]/10">
+                <div className="w-8 h-8 rounded-full bg-[#174B38] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-sans text-xs font-bold text-[#174B38] truncate">{user?.name || 'Administrator'}</p>
+                  <p className="font-sans text-[10px] text-[#6D7C58] truncate">{user?.email || 'admin@sharmilaleafware.com'}</p>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-rose-700 hover:bg-rose-50 border border-rose-200/50"
               >
                 <LogOut className="w-4 h-4" />
                 Logout

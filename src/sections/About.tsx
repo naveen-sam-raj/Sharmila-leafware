@@ -10,7 +10,7 @@ const VALUES = [
   { icon: UtensilsCrossed, title: 'Food Safe', desc: 'Safe for hot, cold, wet, and dry foods. Meets international food safety standards.' },
   { icon: Sprout, title: 'Eco Friendly', desc: 'Returns to the earth without a trace. Fully biodegradable and compostable.' },
   { icon: Factory, title: 'Sustainable Manufacturing', desc: 'Low-energy heat-press process with minimal environmental footprint.' },
-  { icon: Globe2, title: 'Export Quality', desc: 'Trusted by buyers across continents for consistent, premium quality.' },
+  { icon: Globe2, title: 'Export Quality', desc: 'Crafted to international quality standards for global bulk export supply.' },
 ];
 
 export default function About() {
@@ -23,7 +23,7 @@ export default function About() {
         <SectionHeading
           eyebrow="Our Story"
           title={<>Where Nature Meets <span className="gold-text">Craftsmanship</span></>}
-          subtitle="Sharmila Leafware was born from a simple belief — that the finest tableware should come from the earth and return to it without harm. From the areca palm groves of Tamil Nadu to tables across the world, every plate we craft tells a story of nature, tradition, and uncompromising quality."
+          subtitle="Sharmila Leafware was born from a simple belief — that the finest tableware should come from the earth and return to it without harm. From the areca palm groves of Tamil Nadu, India, every plate we craft tells a story of nature, tradition, and uncompromising quality."
         />
 
         {/* Value cards */}
