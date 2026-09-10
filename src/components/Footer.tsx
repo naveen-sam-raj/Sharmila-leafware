@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Leaf, Phone, Mail, MapPin, Instagram, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { whatsappLink } from '@/lib/whatsapp';
+import { fetchCategories } from '@/lib/api';
+import type { Category } from '@/types';
 
 const QUICK_LINKS = [
   { label: 'Home', to: '/' },
@@ -13,16 +16,21 @@ const QUICK_LINKS = [
   { label: 'Contact', to: '/#contact' },
 ];
 
-const PRODUCT_LINKS = [
-  'Round Dinner Plates',
-  'Square Dinner Plates',
-  'Rectangular Catering Trays',
-  'Compartment Buffet Trays',
-  'Deep Soup Bowls',
-  'Wooden Cutlery Sets',
-];
-
 export default function Footer() {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const data = await fetchCategories(false);
+        setCategories(data);
+      } catch {
+        setCategories([]);
+      }
+    }
+    loadCategories();
+  }, []);
+
   return (
     <footer className="relative bg-[#F5E6C8] text-[#334155] border-t border-[#1F4D36]/15 overflow-hidden">
       {/* Top Accent Line */}
@@ -73,17 +81,17 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Products */}
+          {/* Products / Categories */}
           <div>
             <h4 className="font-sans text-xs tracking-[0.2em] text-[#1F4D36] uppercase font-bold mb-2">Product Range</h4>
             <ul className="space-y-1">
-              {PRODUCT_LINKS.map((p) => (
-                <li key={p}>
+              {categories.map((cat) => (
+                <li key={cat._id || cat.name}>
                   <Link
                     to="/#products"
                     className="font-sans text-xs font-light text-[#475569] hover:text-[#C8A45D] transition-colors duration-300 leading-tight"
                   >
-                    {p}
+                    {cat.name}
                   </Link>
                 </li>
               ))}
