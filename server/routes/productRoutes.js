@@ -153,10 +153,7 @@ function sanitizeProductForResponse(product) {
   const p = product.toObject ? product.toObject() : { ...product };
 
   const sanitizeUrl = (url) => {
-    if (typeof url === 'string' && url.startsWith('data:image/') && url.length > 200000) {
-      return 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800';
-    }
-    return url;
+    return url || '';
   };
 
   return {
