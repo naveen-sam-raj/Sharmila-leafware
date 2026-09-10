@@ -31,88 +31,92 @@ function buildTemplateOverlayHtml(order: Order, _settings: BusinessSettings, bgD
     year: 'numeric',
   });
 
-  // ─── COORDINATE CALIBRATION ──────────────────────────────────────────────
-  // Template image original size: 682 × 1024 px
-  // Rendered canvas size:          794 × 1123 px
-  // Scale X = 794/682 = 1.1642   Scale Y = 1123/1024 = 1.0967
+  // ─────────────────────────────────────────────────────────────────────
+  // COORDINATE SYSTEM
+  //   Template PNG original: 682 × 1024 px
+  //   Rendered canvas:        794 × 1123 px
+  //   Scale X = 794/682  = 1.1642
+  //   Scale Y = 1123/1024 = 1.0967
   //
-  // All positions below are measured from the original template image
-  // and scaled to the 794×1123 canvas.
-  // ─────────────────────────────────────────────────────────────────────────
+  // All Y values are measured from the underline centre in the original
+  // image and multiplied by 1.0967.
+  // All X values are measured from the left edge of the original image
+  // and multiplied by 1.1642.
+  // ─────────────────────────────────────────────────────────────────────
 
-  // Right-side invoice meta block
-  // Original X of colon values: ~490px  →  scaled: ~570px
-  // Original Y rows: 217, 247, 278, 308  →  scaled: 238, 271, 305, 338
-  const metaX = 570;
+  // ── Invoice meta (top-right) ──────────────────────────────────────────
+  // Original Y underline centres: 197, 228, 259, 290  → scaled ×1.0967
+  const metaX = 490;          // original ~421px → scaled 490
+  const metaY = [216, 250, 283, 317]; // Invoice No, Date, Order No, Order Date
 
-  // Bill To section
-  // Original Y: Name ~370, Address ~400, Phone ~470  →  scaled: 406, 439, 515
-  const billToNameY    = 406;
-  const billToAddrY    = 439;
-  const billToPhoneY   = 515;
-  const billToX        = 155; // after the colon
+  // ── Bill To ───────────────────────────────────────────────────────────
+  // Original Y: Name ~363, Addr1 ~393, Addr2 ~416, Phone ~453 → scaled
+  const billToX        = 155;
+  const billToNameY    = 398;
+  const billToAddrY    = 431;
+  const billToPhoneY   = 497;
 
-  // Product table
-  // Original Y of row 1 header bottom: ~490px → row 1 data starts ~510px → scaled: ~559px
-  // Each row height in original: ~25px → scaled: ~27.4px
-  const tableStartY  = 559;
-  const rowH         = 27.4;
+  // ── Product table ─────────────────────────────────────────────────────
+  // Row 1 Y (original ~507px → 556); row height (original ~25px → 27.4)
+  const tableStartY = 556;
+  const rowH        = 27.4;
 
-  // Column X positions (measured from original, scaled)
-  // S.NO col centre: ~35 → 41
-  // ITEM NAME col starts after S.NO: ~75 → 87, width ~180 → 209
-  // SIZE col centre: ~330 → 384
-  // QUANTITY col centre: ~415 → 483
-  // AMOUNT col: after ₹ symbol at ~495 → 576, width to ~640 → 744
-  const colItem   = 87;
-  const colSize   = 330;
-  const colQty    = 415;
-  const colAmt    = 526; // after pre-printed ₹
+  // Column X positions (original measured → scaled ×1.1642)
+  // ITEM NAME:  original text-start ~72px  → 84
+  // SIZE:       original col-centre ~347px → 404   (text-align centre)
+  // QUANTITY:   original col-centre ~427px → 497   (text-align centre)
+  // AMOUNT:     original after-₹    ~510px → 594   (text after pre-printed ₹)
+  const colItemX = 75;
+  const colSizeX = 310;   // left of SIZE column; we'll text-align centre inside 80px
+  const colQtyX  = 395;   // left of QTY column; text-align centre inside 75px
+  const colAmtX  = 590;   // starts right after pre-printed ₹
 
-  // Totals section (right side boxes)
-  // Original Y: Subtotal ~843, Delivery ~870, GrandTotal ~900 → scaled: 924, 954, 987
-  const subtotalY    = 924;
-  const deliveryY    = 954;
-  const grandTotalY  = 987;
-  const totalsX      = 540; // left edge of value area
-  const totalsW      = 145;
+  // ── Totals ────────────────────────────────────────────────────────────
+  // Original Y centres: Subtotal ~775, Delivery ~806, Grand Total ~836 → scaled
+  // Original X after ₹: ~510px → scaled 594
+  const subtotalY    = 850;
+  const deliveryY    = 882;
+  const grandTotalY  = 914;
+  const totalsX      = 594;
+  const totalsW      = 160;
 
-  // ─── BUILD ITEM ROWS ──────────────────────────────────────────────────────
+  // ── Build item rows ───────────────────────────────────────────────────
   const itemRowsHtml: string[] = [];
   for (let i = 0; i < 10; i++) {
     const item = order.items[i];
     if (!item) break;
     const y = Math.round(tableStartY + i * rowH);
     itemRowsHtml.push(`
-      <div style="position:absolute;top:${y}px;left:${colItem}px;width:235px;
-        font-size:11.5px;font-weight:700;color:#111;
-        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;">
+      <div style="position:absolute;top:${y}px;left:${colItemX}px;width:232px;
+        font-size:11px;font-weight:700;color:#111;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1;">
         ${item.productName}
       </div>
-      <div style="position:absolute;top:${y}px;left:${colSize}px;width:80px;
-        text-align:center;font-size:11.5px;font-weight:700;color:#111;line-height:1;">
+      <div style="position:absolute;top:${y}px;left:${colSizeX}px;width:82px;
+        text-align:center;font-size:11px;font-weight:700;color:#111;line-height:1.1;">
         ${item.size || '-'}
       </div>
-      <div style="position:absolute;top:${y}px;left:${colQty}px;width:70px;
-        text-align:center;font-size:11.5px;font-weight:700;color:#111;line-height:1;">
+      <div style="position:absolute;top:${y}px;left:${colQtyX}px;width:76px;
+        text-align:center;font-size:11px;font-weight:700;color:#111;line-height:1.1;">
         ${item.quantity}
       </div>
-      <div style="position:absolute;top:${y}px;left:${colAmt}px;width:110px;
-        text-align:left;font-size:11.5px;font-weight:700;color:#111;line-height:1;">
+      <div style="position:absolute;top:${y}px;left:${colAmtX}px;width:130px;
+        text-align:left;font-size:11px;font-weight:700;color:#111;line-height:1.1;">
         ${item.total.toLocaleString('en-IN')}
       </div>
     `);
   }
 
-  // ─── TOTALS ───────────────────────────────────────────────────────────────
-  const subtotalStr   = `${order.subtotal.toLocaleString('en-IN')}`;
-  const deliveryStr   = `${(order.transportCharge || 0).toLocaleString('en-IN')}`;
-  const grandTotalStr = `${order.grandTotal.toLocaleString('en-IN')}`;
+  // ── Totals values ─────────────────────────────────────────────────────
+  const subtotalStr   = order.subtotal.toLocaleString('en-IN');
+  const deliveryStr   = (order.transportCharge || 0).toLocaleString('en-IN');
+  const grandTotalStr = order.grandTotal.toLocaleString('en-IN');
 
-  // Customer details – clamp long strings
-  const customerLine = [order.customerName, order.companyName ? `(${order.companyName})` : '']
-    .filter(Boolean).join(' ');
-  const addressLine  = order.address || '';
+  // ── Customer line (name + optional company) ───────────────────────────
+  const customerLine = [
+    order.customerName,
+    order.companyName ? `(${order.companyName})` : '',
+  ].filter(Boolean).join(' ');
 
   return `
     <div style="
@@ -121,63 +125,71 @@ function buildTemplateOverlayHtml(order: Order, _settings: BusinessSettings, bgD
       font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
       box-sizing:border-box;">
 
-      <!-- Template background image -->
+      <!-- ① Template background image (fills 100%) -->
       <img src="${bgDataUrl}" style="
         position:absolute;top:0;left:0;
         width:794px;height:1123px;
         object-fit:fill;z-index:1;" />
 
-      <!-- Overlay layer -->
+      <!-- ② Dynamic data overlay -->
       <div style="position:absolute;top:0;left:0;width:794px;height:1123px;z-index:2;">
 
-        <!-- ── Invoice meta (top-right) ── -->
-        <div style="position:absolute;top:238px;left:${metaX}px;width:190px;
+        <!-- Invoice meta (top-right) -->
+        <div style="position:absolute;top:${metaY[0]}px;left:${metaX}px;width:185px;
           font-size:12px;font-weight:700;color:#111;white-space:nowrap;">
           ${invoiceNo}
         </div>
-        <div style="position:absolute;top:271px;left:${metaX}px;width:190px;
+        <div style="position:absolute;top:${metaY[1]}px;left:${metaX}px;width:185px;
           font-size:12px;font-weight:700;color:#111;white-space:nowrap;">
           ${dateStr}
         </div>
-        <div style="position:absolute;top:305px;left:${metaX}px;width:190px;
+        <div style="position:absolute;top:${metaY[2]}px;left:${metaX}px;width:185px;
           font-size:12px;font-weight:700;color:#111;white-space:nowrap;">
           ${order.orderId}
         </div>
-        <div style="position:absolute;top:338px;left:${metaX}px;width:190px;
+        <div style="position:absolute;top:${metaY[3]}px;left:${metaX}px;width:185px;
           font-size:12px;font-weight:700;color:#111;white-space:nowrap;">
           ${dateStr}
         </div>
 
-        <!-- ── Bill To ── -->
-        <div style="position:absolute;top:${billToNameY}px;left:${billToX}px;width:500px;
-          font-size:12.5px;font-weight:700;color:#111;
+        <!-- Bill To: Name -->
+        <div style="position:absolute;top:${billToNameY}px;left:${billToX}px;width:490px;
+          font-size:12px;font-weight:700;color:#111;
           white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;">
           ${customerLine}
         </div>
-        <div style="position:absolute;top:${billToAddrY}px;left:${billToX}px;width:500px;
+
+        <!-- Bill To: Address (wraps up to 2 lines) -->
+        <div style="position:absolute;top:${billToAddrY}px;left:${billToX}px;width:490px;
           font-size:11.5px;font-weight:600;color:#111;
-          line-height:1.45;max-height:60px;overflow:hidden;">
-          ${addressLine}
+          line-height:1.55;max-height:52px;overflow:hidden;">
+          ${order.address || ''}
         </div>
-        <div style="position:absolute;top:${billToPhoneY}px;left:${billToX}px;width:300px;
-          font-size:12.5px;font-weight:700;color:#111;white-space:nowrap;line-height:1;">
+
+        <!-- Bill To: Phone -->
+        <div style="position:absolute;top:${billToPhoneY}px;left:${billToX}px;width:280px;
+          font-size:12px;font-weight:700;color:#111;white-space:nowrap;line-height:1;">
           ${order.phone}
         </div>
 
-        <!-- ── Product rows ── -->
+        <!-- Product rows -->
         ${itemRowsHtml.join('')}
 
-        <!-- ── Totals ── -->
+        <!-- Totals: Subtotal -->
         <div style="position:absolute;top:${subtotalY}px;left:${totalsX}px;width:${totalsW}px;
-          text-align:right;font-size:12.5px;font-weight:700;color:#111;white-space:nowrap;">
+          text-align:left;font-size:12px;font-weight:700;color:#111;white-space:nowrap;">
           ${subtotalStr}
         </div>
+
+        <!-- Totals: Delivery charges -->
         <div style="position:absolute;top:${deliveryY}px;left:${totalsX}px;width:${totalsW}px;
-          text-align:right;font-size:12.5px;font-weight:700;color:#111;white-space:nowrap;">
+          text-align:left;font-size:12px;font-weight:700;color:#111;white-space:nowrap;">
           ${deliveryStr}
         </div>
+
+        <!-- Totals: Grand Total (white text on dark green bar) -->
         <div style="position:absolute;top:${grandTotalY}px;left:${totalsX}px;width:${totalsW}px;
-          text-align:right;font-size:13px;font-weight:800;color:#fff;white-space:nowrap;">
+          text-align:left;font-size:13px;font-weight:800;color:#fff;white-space:nowrap;">
           ${grandTotalStr}
         </div>
 
@@ -200,8 +212,8 @@ export async function generateInvoicePDF(order: Order, settings: BusinessSetting
   container.innerHTML = buildTemplateOverlayHtml(order, settings, bgDataUrl);
   document.body.appendChild(container);
 
-  // Wait for background image to load
-  await new Promise((resolve) => setTimeout(resolve, 400));
+  // Give image time to fully load before capture
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   const canvas = await html2canvas(container, {
     scale: 2,
@@ -221,29 +233,22 @@ export async function generateInvoicePDF(order: Order, settings: BusinessSetting
     format: 'a4',
   });
 
-  const pdfWidth  = pdf.internal.pageSize.getWidth();
-  const pdfHeight = pdf.internal.pageSize.getHeight();
-
-  pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+  pdf.addImage(imgData, 'JPEG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
   return pdf;
 }
 
 export async function downloadInvoicePDF(order: Order, settings: BusinessSettings): Promise<void> {
   const doc = await generateInvoicePDF(order, settings);
-  const filename = `Sharmila-Leafware-Invoice-${order.orderId}.pdf`;
-  doc.save(filename);
+  doc.save(`Sharmila-Leafware-Invoice-${order.orderId}.pdf`);
 }
 
 export async function printInvoicePDF(order: Order, settings: BusinessSettings): Promise<void> {
   const doc = await generateInvoicePDF(order, settings);
   doc.autoPrint();
-  const pdfBlob = doc.output('blob');
-  const blobUrl = URL.createObjectURL(pdfBlob);
+  const blobUrl = URL.createObjectURL(doc.output('blob'));
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
   iframe.src = blobUrl;
   document.body.appendChild(iframe);
-  iframe.onload = () => {
-    iframe.contentWindow?.print();
-  };
+  iframe.onload = () => iframe.contentWindow?.print();
 }
