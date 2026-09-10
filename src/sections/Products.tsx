@@ -86,7 +86,7 @@ export default function Products() {
 
         {/* Loading state */}
         {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8 mt-10">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="aspect-[4/5] rounded-[20px] bg-white border border-[#1F4D36]/10 animate-pulse shadow-sm" />
             ))}
@@ -103,7 +103,7 @@ export default function Products() {
 
         {/* Products grid */}
         {!loading && !error && filteredProducts.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8 mt-10">
             {filteredProducts.map((product, i) => (
               <ProductCard key={product._id || product.id} product={product} index={i} />
             ))}
