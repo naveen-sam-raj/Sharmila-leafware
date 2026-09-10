@@ -49,6 +49,9 @@ export default function AdminOrders() {
   // PDF Generating State
   const [pdfGeneratingId, setPdfGeneratingId] = useState<string | null>(null);
 
+  // View Mode: 'cards' or 'table'
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -138,7 +141,7 @@ export default function AdminOrders() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Order Management</h1>
+          <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Customer Orders</h1>
           <p className="font-sans text-xs text-[#64748B] mt-0.5">
             Manage customer orders, track payments, generate invoices, and dispatch goods
           </p>
@@ -153,8 +156,8 @@ export default function AdminOrders() {
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="p-4 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="relative">
+      <div className="p-4 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm flex flex-col sm:flex-row items-center gap-3">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
           <input
             type="text"
@@ -165,7 +168,7 @@ export default function AdminOrders() {
           />
         </div>
 
-        <div>
+        <div className="w-full sm:w-auto min-w-[170px]">
           <select
             value={paymentStatus}
             onChange={(e) => setPaymentStatus(e.target.value)}
@@ -178,7 +181,7 @@ export default function AdminOrders() {
           </select>
         </div>
 
-        <div>
+        <div className="w-full sm:w-auto min-w-[170px]">
           <select
             value={orderStatus}
             onChange={(e) => setOrderStatus(e.target.value)}
@@ -194,24 +197,225 @@ export default function AdminOrders() {
             <option value="CANCELLED">CANCELLED</option>
           </select>
         </div>
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center gap-1 bg-[#FAF3E8] p-1 rounded-xl border border-[#1F4D36]/15 self-end sm:self-center shrink-0">
+          <button
+            type="button"
+            onClick={() => setViewMode('cards')}
+            className={`px-3 py-1.5 rounded-lg font-sans text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              viewMode === 'cards'
+                ? 'bg-[#1F4D36] text-white shadow-xs'
+                : 'text-[#64748B] hover:text-[#1F4D36]'
+            }`}
+          >
+            <Filter className="w-3.5 h-3.5" /> Cards
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('table')}
+            className={`px-3 py-1.5 rounded-lg font-sans text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              viewMode === 'table'
+                ? 'bg-[#1F4D36] text-white shadow-xs'
+                : 'text-[#64748B] hover:text-[#1F4D36]'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" /> Table
+          </button>
+        </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="py-20 text-center text-xs text-[#64748B]">Loading orders...</div>
-        ) : orders.length === 0 ? (
-          <div className="py-16 text-center">
-            <ShoppingBag className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
-            <p className="font-sans text-sm text-[#64748B] mb-3">No orders yet.</p>
-            <Link
-              to="/admin/orders/add"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#1F4D36]"
-            >
-              <PlusCircle className="w-4 h-4" /> Create First Order
-            </Link>
-          </div>
-        ) : (
+      {/* Orders List Container */}
+      {loading ? (
+        <div className="p-16 rounded-[24px] bg-white border border-[#1F4D36]/15 text-center text-xs text-[#64748B]">
+          Loading orders...
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="p-16 rounded-[24px] bg-white border border-[#1F4D36]/15 text-center">
+          <ShoppingBag className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
+          <p className="font-sans text-sm text-[#64748B] mb-3">No orders found.</p>
+          <Link
+            to="/admin/orders/add"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#1F4D36]"
+          >
+            <PlusCircle className="w-4 h-4" /> Create First Order
+          </Link>
+        </div>
+      ) : viewMode === 'cards' ? (
+        /* ── CARD GRID VIEW ── */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {orders.map((ord) => {
+            const id = ord._id || ord.id;
+            const isPaid = ord.paymentStatus === 'PAID';
+            const isPartial = ord.paymentStatus === 'PARTIALLY_PAID';
+
+            return (
+              <motion.div
+                key={id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative bg-white rounded-[22px] border border-[#1F4D36]/15 p-5 shadow-sm hover:shadow-md hover:border-[#C8A45D]/60 transition-all flex flex-col justify-between"
+              >
+                <div>
+                  {/* Card Header: Order ID & Badges */}
+                  <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-slate-100">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-base font-bold text-[#1F4D36]">{ord.orderId}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            ord.orderStatus === 'DELIVERED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : ord.orderStatus === 'CANCELLED'
+                              ? 'bg-red-100 text-red-800'
+                              : ord.orderStatus === 'SHIPPED' || ord.orderStatus === 'PACKED'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-[#FAF3E8] text-[#1F4D36] border border-[#1F4D36]/15'
+                          }`}
+                        >
+                          {ord.orderStatus}
+                        </span>
+                      </div>
+                      <span className="font-sans text-[11px] text-[#64748B] flex items-center gap-1 mt-1">
+                        <Clock className="w-3 h-3 text-[#64748B]" />
+                        {new Date(ord.createdAt || Date.now()).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        isPaid
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : isPartial
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                          : 'bg-red-50 text-red-700 border border-red-200'
+                      }`}
+                    >
+                      {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                      {ord.paymentStatus}
+                    </span>
+                  </div>
+
+                  {/* Customer Information */}
+                  <div className="py-3 border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <span className="font-sans text-sm font-bold text-[#1F4D36] truncate">{ord.customerName}</span>
+                      {ord.companyName && (
+                        <span className="font-sans text-[11px] text-[#64748B] font-medium truncate max-w-[130px]">
+                          {ord.companyName}
+                        </span>
+                      )}
+                    </div>
+                    {ord.phone && (
+                      <a
+                        href={`tel:${ord.phone}`}
+                        className="inline-flex items-center gap-1 font-sans text-xs text-[#64748B] hover:text-[#1F4D36] transition-colors mt-0.5"
+                      >
+                        📞 {ord.phone}
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Products Summary */}
+                  <div className="py-3 border-b border-slate-100">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-sans text-[10px] font-semibold text-[#64748B] uppercase tracking-wider">
+                        Products ({ord.items.length})
+                      </span>
+                    </div>
+                    <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
+                      {ord.items.map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between font-sans text-xs text-[#334155]">
+                          <span className="truncate pr-2 font-medium">{item.productName}</span>
+                          <span className="shrink-0 text-[11px] font-semibold text-[#64748B]">
+                            x{item.quantity} ({formatIndianCurrency(item.totalPrice)})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Financial Summary */}
+                  <div className="py-3 grid grid-cols-3 gap-2 bg-[#FAF3E8]/40 rounded-xl p-3 my-3 text-center border border-[#1F4D36]/10">
+                    <div>
+                      <span className="block font-sans text-[10px] uppercase font-semibold text-[#64748B]">Total</span>
+                      <span className="font-sans text-xs font-bold text-[#1F4D36]">{formatIndianCurrency(ord.grandTotal)}</span>
+                    </div>
+                    <div>
+                      <span className="block font-sans text-[10px] uppercase font-semibold text-emerald-700">Paid</span>
+                      <span className="font-sans text-xs font-bold text-emerald-700">{formatIndianCurrency(ord.paidAmount)}</span>
+                    </div>
+                    <div>
+                      <span className="block font-sans text-[10px] uppercase font-semibold text-amber-700">Balance</span>
+                      <span className="font-sans text-xs font-bold text-amber-700">{formatIndianCurrency(ord.balanceAmount)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Action Footer */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                  {!isPaid && (
+                    <button
+                      onClick={() => {
+                        setPaymentModalOrder(ord);
+                        setPayAmount(String(ord.balanceAmount));
+                      }}
+                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 transition-colors shadow-xs"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" /> Pay ₹{ord.balanceAmount}
+                    </button>
+                  )}
+
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <button
+                      onClick={() => handleDownloadPDF(ord)}
+                      disabled={pdfGeneratingId === ord.orderId}
+                      className="p-2 rounded-xl text-[#1F4D36] bg-[#FAF3E8] hover:bg-[#F5E6C8] transition-colors border border-[#1F4D36]/15"
+                      title="Download Invoice PDF"
+                    >
+                      {pdfGeneratingId === ord.orderId ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4" />
+                      )}
+                    </button>
+
+                    <button
+                      onClick={() => handlePrintPDF(ord)}
+                      className="p-2 rounded-xl text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200"
+                      title="Print Invoice"
+                    >
+                      <Printer className="w-4 h-4" />
+                    </button>
+
+                    <Link
+                      to={`/admin/orders/edit/${id}`}
+                      className="p-2 rounded-xl text-[#1F4D36] bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200"
+                      title="Edit Order"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Link>
+
+                    <button
+                      onClick={() => setCancellingOrder(ord)}
+                      className="p-2 rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-colors border border-red-100"
+                      title="Cancel Order"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      ) : (
+        /* ── TABLE VIEW ── */
+        <div className="rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -347,8 +551,8 @@ export default function AdminOrders() {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Payment Recording Modal */}
       {paymentModalOrder && (
