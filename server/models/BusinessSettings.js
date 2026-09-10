@@ -9,7 +9,7 @@ const businessSettingsSchema = new mongoose.Schema(
     whatsapp: { type: String, default: '+91 8270839507' },
     email: { type: String, default: 'sharmilaleafware@gmail.com' },
     address: { type: String, default: 'No. 12, Palm Grove Estate, Salem Highway, Tamil Nadu - 636001, India' },
-    website: { type: String, default: 'https://sharmilaleafware.in' },
+    website: { type: String, default: 'https://www.sharmilaleafware.in' },
     gstNumber: { type: String, default: '33AAAAA0000A1Z5' },
     panNumber: { type: String, default: 'AAAAA0000A' },
     bankName: { type: String, default: 'HDFC Bank' },

@@ -16,8 +16,8 @@ const DEFAULT_DESCRIPTION =
   'Sharmila Leafware manufactures and supplies natural, biodegradable areca leaf plates and eco-friendly disposable tableware for customers in India and international markets.';
 const DEFAULT_KEYWORDS =
   'areca leaf plates, areca leaf plates manufacturer, areca leaf plates supplier, natural areca leaf plates, eco friendly plates, biodegradable plates, disposable areca leaf plates, palm leaf plates, eco friendly disposable tableware, areca leaf products, areca leaf plates exporter';
-const DEFAULT_DOMAIN = 'https://sharmilaleafware.in';
-const DEFAULT_OG_IMAGE = 'https://sharmilaleafware.in/hero-banner.jpg';
+const DEFAULT_DOMAIN = 'https://www.sharmilaleafware.in';
+const DEFAULT_OG_IMAGE = 'https://www.sharmilaleafware.in/hero-banner.jpg';
 
 export default function SEO({
   title = DEFAULT_TITLE,

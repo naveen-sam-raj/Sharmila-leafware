@@ -7,18 +7,18 @@ export default function ContactPage() {
       <SEO
         title="Contact Sharmila Leafware | Areca Leaf Plates Wholesale & Export Inquiries"
         description="Get in touch with Sharmila Leafware for wholesale inquiries, custom orders, bulk quotes, and global export partnerships for natural Areca leaf tableware."
-        canonicalUrl="https://sharmilaleafware.in/contact"
+        canonicalUrl="https://www.sharmilaleafware.in/contact"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'ContactPage',
-          '@id': 'https://sharmilaleafware.in/contact#webpage',
-          'url': 'https://sharmilaleafware.in/contact',
+          '@id': 'https://www.sharmilaleafware.in/contact#webpage',
+          'url': 'https://www.sharmilaleafware.in/contact',
           'name': 'Contact Sharmila Leafware | Areca Leaf Plates Wholesale & Export Inquiries',
           'description': 'Get in touch with Sharmila Leafware for wholesale inquiries, custom orders, bulk quotes, and global export partnerships for natural Areca leaf tableware.',
           'publisher': {
             '@type': 'Organization',
             'name': 'Sharmila Leafware',
-            'url': 'https://sharmilaleafware.in/'
+            'url': 'https://www.sharmilaleafware.in/'
           }
         }}
       />

@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS = {
   whatsapp: '+91 8270839507',
   email: 'sharmilaleafware@gmail.com',
   address: 'No. 12, Palm Grove Estate, Salem Highway, Tamil Nadu - 636001, India',
-  website: 'https://sharmilaleafware.in',
+  website: 'https://www.sharmilaleafware.in',
   gstNumber: '33AAAAA0000A1Z5',
   panNumber: 'AAAAA0000A',
   bankName: 'HDFC Bank',

@@ -15,7 +15,7 @@ export default function AdminSettings() {
   const [phone, setPhone] = useState('+91 8270839507');
   const [whatsapp, setWhatsapp] = useState('+91 8270839507');
   const [email, setEmail] = useState('sharmilaleafware@gmail.com');
-  const [website, setWebsite] = useState('https://sharmilaleafware.in');
+  const [website, setWebsite] = useState('https://www.sharmilaleafware.in');
   const [address, setAddress] = useState(
     'No. 12, Palm Grove Estate, Salem Highway, Tamil Nadu - 636001, India'
   );
@@ -49,7 +49,7 @@ export default function AdminSettings() {
         setPhone(data.phone || '+91 8270839507');
         setWhatsapp(data.whatsapp || '+91 8270839507');
         setEmail(data.email || 'sharmilaleafware@gmail.com');
-        setWebsite(data.website || 'https://sharmilaleafware.in');
+        setWebsite(data.website || 'https://www.sharmilaleafware.in');
         setAddress(data.address || '');
 
         setGstNumber(data.gstNumber || '');

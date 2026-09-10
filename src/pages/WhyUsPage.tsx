@@ -7,18 +7,18 @@ export default function WhyUsPage() {
       <SEO
         title="Why Choose Sharmila Leafware | Eco-Friendly Areca Leaf Products"
         description="Discover why wholesale buyers, distributors, and exporters choose Sharmila Leafware for heat-pressed, durable, heat-resistant natural Areca palm leaf tableware."
-        canonicalUrl="https://sharmilaleafware.in/why-us"
+        canonicalUrl="https://www.sharmilaleafware.in/why-us"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebPage',
-          '@id': 'https://sharmilaleafware.in/why-us#webpage',
-          'url': 'https://sharmilaleafware.in/why-us',
+          '@id': 'https://www.sharmilaleafware.in/why-us#webpage',
+          'url': 'https://www.sharmilaleafware.in/why-us',
           'name': 'Why Choose Sharmila Leafware | Eco-Friendly Areca Leaf Products',
           'description': 'Discover why wholesale buyers, distributors, and exporters choose Sharmila Leafware for heat-pressed, durable, heat-resistant natural Areca palm leaf tableware.',
           'publisher': {
             '@type': 'Organization',
             'name': 'Sharmila Leafware',
-            'url': 'https://sharmilaleafware.in/'
+            'url': 'https://www.sharmilaleafware.in/'
           }
         }}
       />

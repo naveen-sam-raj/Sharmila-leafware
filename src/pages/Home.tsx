@@ -16,18 +16,18 @@ export default function Home() {
       <SEO
         title="Sharmila Leafware | Premium Areca Leaf Plates Manufacturer & Supplier"
         description="Sharmila Leafware manufactures and supplies natural, biodegradable areca leaf plates and eco-friendly disposable tableware for customers in India and international markets."
-        canonicalUrl="https://sharmilaleafware.in/"
+        canonicalUrl="https://www.sharmilaleafware.in/"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebPage',
-          '@id': 'https://sharmilaleafware.in/#webpage',
-          'url': 'https://sharmilaleafware.in/',
+          '@id': 'https://www.sharmilaleafware.in/#webpage',
+          'url': 'https://www.sharmilaleafware.in/',
           'name': 'Sharmila Leafware | Premium Areca Leaf Plates Manufacturer & Supplier',
           'description': 'Sharmila Leafware manufactures and supplies natural, biodegradable areca leaf plates and eco-friendly disposable tableware for customers in India and international markets.',
           'publisher': {
             '@type': 'Organization',
             'name': 'Sharmila Leafware',
-            'url': 'https://sharmilaleafware.in/'
+            'url': 'https://www.sharmilaleafware.in/'
           }
         }}
       />

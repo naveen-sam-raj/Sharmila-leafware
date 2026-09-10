@@ -242,7 +242,7 @@ async function seedDatabase() {
         whatsapp: '+91 8270839507',
         email: 'sharmilaleafware@gmail.com',
         address: 'No. 12, Palm Grove Estate, Salem Highway, Tamil Nadu - 636001, India',
-        website: 'https://sharmilaleafware.in',
+        website: 'https://www.sharmilaleafware.in',
         gstNumber: '33AAAAA0000A1Z5',
         panNumber: 'AAAAA0000A',
         bankName: 'HDFC Bank',
@@ -288,7 +288,7 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://sharmilaleafware.in/sitemap.xml`);
+Sitemap: https://www.sharmilaleafware.in/sitemap.xml`);
 });
 
 app.get('/sitemap.xml', async (req, res) => {
@@ -296,57 +296,57 @@ app.get('/sitemap.xml', async (req, res) => {
   res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sharmilaleafware.in/</loc>
+    <loc>https://www.sharmilaleafware.in/</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/products</loc>
+    <loc>https://www.sharmilaleafware.in/products</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/about</loc>
+    <loc>https://www.sharmilaleafware.in/about</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/why-us</loc>
+    <loc>https://www.sharmilaleafware.in/why-us</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/quality</loc>
+    <loc>https://www.sharmilaleafware.in/quality</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/export</loc>
+    <loc>https://www.sharmilaleafware.in/export</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/contact</loc>
+    <loc>https://www.sharmilaleafware.in/contact</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/products/10-inch-round-dinner-plate</loc>
+    <loc>https://www.sharmilaleafware.in/products/10-inch-round-dinner-plate</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/products/9-inch-square-dinner-plate</loc>
+    <loc>https://www.sharmilaleafware.in/products/9-inch-square-dinner-plate</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/products/4-compartment-buffet-tray</loc>
+    <loc>https://www.sharmilaleafware.in/products/4-compartment-buffet-tray</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sharmilaleafware.in/products/6-inch-deep-salad-bowl</loc>
+    <loc>https://www.sharmilaleafware.in/products/6-inch-deep-salad-bowl</loc>
     <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
   </url>

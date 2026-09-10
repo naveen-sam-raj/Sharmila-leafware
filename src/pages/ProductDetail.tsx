@@ -329,7 +329,7 @@ export default function ProductDetail() {
 
   const seoTitle = `${product.name} | Sharmila Leafware`;
   const seoDescription = `${product.name} — ${product.description || '100% natural, biodegradable Areca palm leaf tableware manufactured and supplied by Sharmila Leafware.'}`;
-  const canonicalUrl = `https://sharmilaleafware.in/products/${product.slug}`;
+  const canonicalUrl = `https://www.sharmilaleafware.in/products/${product.slug}`;
   const gallery = [mainImg, ...(product.images || product.gallery_urls || [])].filter((url, idx, arr) => url && arr.indexOf(url) === idx);
   const productJsonLd = [
     {
@@ -347,8 +347,8 @@ export default function ProductDetail() {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sharmilaleafware.in/' },
-        { '@type': 'ListItem', position: 2, name: 'Products', item: 'https://sharmilaleafware.in/products' },
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.sharmilaleafware.in/' },
+        { '@type': 'ListItem', position: 2, name: 'Products', item: 'https://www.sharmilaleafware.in/products' },
         { '@type': 'ListItem', position: 3, name: product.name, item: canonicalUrl },
       ],
     },

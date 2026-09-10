@@ -6,4 +6,4 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://sharmilaleafware.in/sitemap.xml
+Sitemap: https://www.sharmilaleafware.in/sitemap.xml
