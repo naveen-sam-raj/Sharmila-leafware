@@ -203,7 +203,7 @@ export default function AdminDashboard() {
               </span>
             </div>
             <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Total Commission</h3>
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-emerald-800 mt-1">
+            <p className="font-sans text-2xl sm:text-3xl font-extrabold text-emerald-800 mt-1">
               {loading ? '...' : formatIndianCurrency(stats?.totalCommission || 0)}
             </p>
           </div>
@@ -218,22 +218,22 @@ export default function AdminDashboard() {
               </span>
             </div>
             <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Total Expenses</h3>
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-red-700 mt-1">
+            <p className="font-sans text-2xl sm:text-3xl font-extrabold text-red-700 mt-1">
               {loading ? '...' : formatIndianCurrency(stats?.totalExpenses || 0)}
             </p>
           </div>
 
-          <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
+          <div className="p-6 rounded-[20px] bg-[#1F4D36] border border-[#1F4D36] shadow-sm text-white">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[#FAF3E8] text-[#1F4D36] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center">
                 <Wallet className="w-5 h-5" />
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F4D36] bg-[#FAF3E8] px-2.5 py-1 rounded-full">
-                Balance
+                Cash in Hand
               </span>
             </div>
-            <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Available Commission</h3>
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-[#1F4D36] mt-1">
+            <h3 className="font-sans text-xs font-medium text-[#FAF3E8]/80 uppercase">Cash in Hand</h3>
+            <p className="font-sans text-2xl sm:text-3xl font-extrabold text-white mt-1">
               {loading ? '...' : formatIndianCurrency(stats?.availableCommission || 0)}
             </p>
           </div>
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
               </span>
             </div>
             <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Pending Commission</h3>
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-amber-800 mt-1">
+            <p className="font-sans text-2xl sm:text-3xl font-extrabold text-amber-800 mt-1">
               {loading ? '...' : formatIndianCurrency(stats?.pendingCommission || 0)}
             </p>
           </div>

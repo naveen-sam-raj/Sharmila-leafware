@@ -14,10 +14,11 @@ import {
   Clock,
   Link2,
   CheckCircle2,
-  FileText,
-  Building2,
   Layers,
-  ArrowUpRight,
+  Tag,
+  CreditCard,
+  Building2,
+  Coins,
 } from 'lucide-react';
 import {
   fetchExpenses,
@@ -338,7 +339,7 @@ export default function AdminExpenses() {
   // ── METRICS COMPUTATION ───────────────────────────────────────────────────
   const totalReceivedCommission = summary?.totalReceivedCommission ?? commissions.filter(c => c.status === 'Received').reduce((sum, c) => sum + c.amount, 0);
   const totalExpenses = summary?.totalExpenses ?? expenses.reduce((sum, e) => sum + e.amount, 0);
-  const availableCommission = summary?.availableCommission ?? (totalReceivedCommission - totalExpenses);
+  const cashInHandBalance = summary?.availableCommission ?? (totalReceivedCommission - totalExpenses);
   const pendingCommission = summary?.totalPendingCommission ?? commissions.filter(c => c.status === 'Pending').reduce((sum, c) => sum + c.amount, 0);
 
   return (
@@ -348,7 +349,7 @@ export default function AdminExpenses() {
         <div>
           <h1 className="font-serif text-3xl text-[#1F4D36] font-bold">Commissions & Expense Management</h1>
           <p className="font-sans text-xs text-[#64748B] mt-0.5">
-            Internal financial tracking for commissions received, linked business expenses, and remaining balances
+            Internal financial tracking for commissions received, linked business expenses, and cash in hand balance
           </p>
         </div>
 
@@ -369,7 +370,7 @@ export default function AdminExpenses() {
         </div>
       </div>
 
-      {/* Top Financial Summary Cards */}
+      {/* Top Financial Summary Cards (Normal font-sans for numbers + Cash in Hand section) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Total Commission Received */}
         <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
@@ -382,10 +383,12 @@ export default function AdminExpenses() {
             </span>
           </div>
           <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Total Commission</h3>
-          <p className="font-serif text-3xl font-bold text-emerald-800 mt-1">{formatIndianCurrency(totalReceivedCommission)}</p>
+          <p className="font-sans text-2xl sm:text-3xl font-extrabold text-emerald-800 mt-1">
+            {formatIndianCurrency(totalReceivedCommission)}
+          </p>
         </div>
 
-        {/* Card 2: Total Expenses */}
+        {/* Card 2: Total Expenses Outflow */}
         <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
@@ -396,22 +399,26 @@ export default function AdminExpenses() {
             </span>
           </div>
           <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Total Expenses</h3>
-          <p className="font-serif text-3xl font-bold text-red-700 mt-1">{formatIndianCurrency(totalExpenses)}</p>
+          <p className="font-sans text-2xl sm:text-3xl font-extrabold text-red-700 mt-1">
+            {formatIndianCurrency(totalExpenses)}
+          </p>
         </div>
 
-        {/* Card 3: Available Commission */}
-        <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
+        {/* Card 3: CASH IN HAND SECTION (Available Balance Tally) */}
+        <div className="p-6 rounded-[20px] bg-[#1F4D36] border border-[#1F4D36] shadow-md text-white">
           <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FAF3E8] text-[#1F4D36] flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center">
+              <Coins className="w-5 h-5" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F4D36] bg-[#FAF3E8] px-2.5 py-1 rounded-full">
-              Balance
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1F4D36] bg-[#FAF3E8] px-2.5 py-1 rounded-full shadow-xs">
+              Cash in Hand
             </span>
           </div>
-          <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Available Commission</h3>
-          <p className={`font-serif text-3xl font-bold mt-1 ${availableCommission < 0 ? 'text-red-600' : 'text-[#1F4D36]'}`}>
-            {formatIndianCurrency(availableCommission)}
+          <h3 className="font-sans text-xs font-semibold text-[#FAF3E8]/80 uppercase tracking-wide">
+            Cash in Hand (Tallied Balance)
+          </h3>
+          <p className={`font-sans text-2xl sm:text-3xl font-extrabold mt-1 ${cashInHandBalance < 0 ? 'text-rose-300' : 'text-white'}`}>
+            {formatIndianCurrency(cashInHandBalance)}
           </p>
         </div>
 
@@ -426,7 +433,9 @@ export default function AdminExpenses() {
             </span>
           </div>
           <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Pending Commission</h3>
-          <p className="font-serif text-3xl font-bold text-amber-800 mt-1">{formatIndianCurrency(pendingCommission)}</p>
+          <p className="font-sans text-2xl sm:text-3xl font-extrabold text-amber-800 mt-1">
+            {formatIndianCurrency(pendingCommission)}
+          </p>
         </div>
       </div>
 
@@ -465,11 +474,11 @@ export default function AdminExpenses() {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>Commission & Expense Linking Summary</span>
+          <span>Linking & Cash Summary</span>
         </button>
       </div>
 
-      {/* ── TAB 1: EXPENSES LOG ─────────────────────────────────────────────── */}
+      {/* ── TAB 1: EXPENSES LOG (CARD VIEW LAYOUT) ─────────────────────────── */}
       {activeTab === 'expenses' && (
         <div className="space-y-4">
           {/* Expense Filters */}
@@ -519,106 +528,113 @@ export default function AdminExpenses() {
             </div>
           </div>
 
-          {/* Expenses Table */}
-          <div className="rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm overflow-hidden">
-            {loading ? (
-              <div className="py-20 text-center text-xs text-[#64748B]">Loading expenses...</div>
-            ) : expenses.length === 0 ? (
-              <div className="py-16 text-center">
-                <DollarSign className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
-                <p className="font-sans text-sm text-[#64748B] mb-3">No expenses found.</p>
-                <button
-                  onClick={openAddExpenseModal}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#1F4D36]"
-                >
-                  <PlusCircle className="w-4 h-4" /> Record First Expense
-                </button>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#FAF3E8]/60 border-b border-[#1F4D36]/10 text-[11px] font-bold uppercase tracking-wider text-[#1F4D36]">
-                      <th className="py-4 px-6">Date</th>
-                      <th className="py-4 px-6">Category</th>
-                      <th className="py-4 px-6">Description</th>
-                      <th className="py-4 px-6">Amount</th>
-                      <th className="py-4 px-6">Linked Commission</th>
-                      <th className="py-4 px-6">Method</th>
-                      <th className="py-4 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-sans text-xs">
-                    {expenses.map((exp) => {
-                      const id = exp._id || exp.id;
-                      return (
-                        <tr key={id} className="hover:bg-[#FAF3E8]/20 transition-colors">
-                          <td className="py-3.5 px-6 font-semibold text-[#1F4D36]">
-                            {new Date(exp.expenseDate).toLocaleDateString('en-IN', {
-                              day: '2-digit',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                          </td>
+          {/* Expenses Cards Container */}
+          {loading ? (
+            <div className="py-20 text-center text-xs text-[#64748B] bg-white rounded-3xl border border-[#1F4D36]/15">
+              Loading expense cards...
+            </div>
+          ) : expenses.length === 0 ? (
+            <div className="py-16 text-center bg-white rounded-3xl border border-[#1F4D36]/15">
+              <DollarSign className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
+              <p className="font-sans text-sm text-[#64748B] mb-3">No expenses found.</p>
+              <button
+                onClick={openAddExpenseModal}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#1F4D36]"
+              >
+                <PlusCircle className="w-4 h-4" /> Record First Expense
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {expenses.map((exp, idx) => {
+                const id = exp._id || exp.id;
+                return (
+                  <motion.div
+                    key={id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.03 }}
+                    className="p-5 rounded-[22px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#1F4D36]/40 transition-all flex flex-col justify-between space-y-3 group"
+                  >
+                    {/* Card Top Pill Bar */}
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#FAF3E8] text-[#1F4D36] border border-[#1F4D36]/15 flex items-center gap-1.5">
+                        <Tag className="w-3.5 h-3.5 text-[#C8A45D]" />
+                        {exp.category}
+                      </span>
 
-                          <td className="py-3.5 px-6">
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#FAF3E8] text-[#1F4D36] border border-[#1F4D36]/15">
-                              {exp.category}
-                            </span>
-                          </td>
+                      <span className="text-[11px] font-bold text-[#64748B] flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200">
+                        <Calendar className="w-3 h-3 text-[#1F4D36]" />
+                        {new Date(exp.expenseDate).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
 
-                          <td className="py-3.5 px-6 text-[#334155] font-medium max-w-[260px] truncate">
-                            {exp.description}
-                            {exp.notes && (
-                              <span className="block font-normal text-[11px] text-[#64748B] truncate">{exp.notes}</span>
-                            )}
-                          </td>
+                    {/* Card Content & Amount */}
+                    <div className="space-y-2 py-1">
+                      <h4 className="font-sans text-sm font-bold text-[#1F4D36] line-clamp-2 leading-snug">
+                        {exp.description}
+                      </h4>
 
-                          <td className="py-3.5 px-6 font-bold text-red-700">{formatIndianCurrency(exp.amount)}</td>
+                      {exp.notes && (
+                        <p className="font-sans text-xs text-[#64748B] line-clamp-2 bg-[#FAF3E8]/40 p-2 rounded-xl border border-[#1F4D36]/10">
+                          {exp.notes}
+                        </p>
+                      )}
 
-                          <td className="py-3.5 px-6">
-                            {exp.commissionRef || exp.commissionId ? (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                <Link2 className="w-3 h-3 text-emerald-700" />
-                                {exp.commissionRef || 'Linked'}
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 font-normal">—</span>
-                            )}
-                          </td>
+                      <div className="pt-2 flex items-baseline justify-between">
+                        <span className="font-sans text-[10px] uppercase font-bold tracking-wider text-[#64748B]">Amount</span>
+                        <span className="font-sans text-2xl font-extrabold text-red-700 tracking-tight">
+                          {formatIndianCurrency(exp.amount)}
+                        </span>
+                      </div>
+                    </div>
 
-                          <td className="py-3.5 px-6 text-[#64748B]">{exp.paymentMethod}</td>
+                    {/* Card Footer Actions & Method */}
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-semibold text-[#475569] flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-lg">
+                          <CreditCard className="w-3 h-3 text-[#1F4D36]" />
+                          {exp.paymentMethod}
+                        </span>
 
-                          <td className="py-3.5 px-6 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => openEditExpenseModal(exp)}
-                                className="p-2 rounded-lg text-[#1F4D36] bg-[#FAF3E8] hover:bg-[#F5E6C8] transition-colors"
-                                title="Edit Expense"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => setDeletingExpense(exp)}
-                                className="p-2 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
-                                title="Delete Expense"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                        {(exp.commissionRef || exp.commissionId) && (
+                          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                            <Link2 className="w-3 h-3" />
+                            {exp.commissionRef || 'Linked'}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => openEditExpenseModal(exp)}
+                          className="p-2 rounded-xl text-[#1F4D36] bg-[#FAF3E8] hover:bg-[#F5E6C8] transition-colors"
+                          title="Edit Expense"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingExpense(exp)}
+                          className="p-2 rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                          title="Delete Expense"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── TAB 2: COMMISSIONS HISTORY ──────────────────────────────────────── */}
+      {/* ── TAB 2: COMMISSIONS HISTORY (CARD VIEW LAYOUT) ────────────────────── */}
       {activeTab === 'commissions' && (
         <div className="space-y-4">
           {/* Commission Filters */}
@@ -662,131 +678,145 @@ export default function AdminExpenses() {
             </div>
           </div>
 
-          {/* Commissions Table */}
-          <div className="rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm overflow-hidden">
-            {loading ? (
-              <div className="py-20 text-center text-xs text-[#64748B]">Loading commissions...</div>
-            ) : commissions.length === 0 ? (
-              <div className="py-16 text-center">
-                <Wallet className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
-                <p className="font-sans text-sm text-[#64748B] mb-3">No commission records found.</p>
-                <button
-                  onClick={openAddCommModal}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#1F4D36]"
-                >
-                  <PlusCircle className="w-4 h-4" /> Create First Commission Entry
-                </button>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#FAF3E8]/60 border-b border-[#1F4D36]/10 text-[11px] font-bold uppercase tracking-wider text-[#1F4D36]">
-                      <th className="py-4 px-6">Date</th>
-                      <th className="py-4 px-6">Reference</th>
-                      <th className="py-4 px-6">Invoice / Order</th>
-                      <th className="py-4 px-6">Description</th>
-                      <th className="py-4 px-6">Commission Amount</th>
-                      <th className="py-4 px-6">Status</th>
-                      <th className="py-4 px-6">Expenses Spent</th>
-                      <th className="py-4 px-6">Remaining Balance</th>
-                      <th className="py-4 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-sans text-xs">
-                    {commissions.map((comm) => {
-                      const id = comm._id || comm.id;
-                      const linkedSum = comm.linkedExpensesSum ?? 0;
-                      const remBalance = comm.status === 'Received' ? comm.amount - linkedSum : 0;
+          {/* Commissions Cards Container */}
+          {loading ? (
+            <div className="py-20 text-center text-xs text-[#64748B] bg-white rounded-3xl border border-[#1F4D36]/15">
+              Loading commission cards...
+            </div>
+          ) : commissions.length === 0 ? (
+            <div className="py-16 text-center bg-white rounded-3xl border border-[#1F4D36]/15">
+              <Wallet className="w-12 h-12 text-[#1F4D36]/30 mx-auto mb-3" />
+              <p className="font-sans text-sm text-[#64748B] mb-3">No commission records found.</p>
+              <button
+                onClick={openAddCommModal}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#1F4D36]"
+              >
+                <PlusCircle className="w-4 h-4" /> Create First Commission Entry
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {commissions.map((comm, idx) => {
+                const id = comm._id || comm.id;
+                const linkedSum = comm.linkedExpensesSum ?? 0;
+                const remBalance = comm.status === 'Received' ? comm.amount - linkedSum : 0;
 
-                      return (
-                        <tr key={id} className="hover:bg-[#FAF3E8]/20 transition-colors">
-                          <td className="py-3.5 px-6 font-semibold text-[#1F4D36]">
-                            {new Date(comm.commissionDate).toLocaleDateString('en-IN', {
-                              day: '2-digit',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                          </td>
+                return (
+                  <motion.div
+                    key={id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.03 }}
+                    className="p-5 rounded-[22px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#1F4D36]/40 transition-all flex flex-col justify-between space-y-3 group"
+                  >
+                    {/* Card Header Bar */}
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#1F4D36] text-white tracking-wider uppercase">
+                        {comm.referenceNumber}
+                      </span>
 
-                          <td className="py-3.5 px-6 font-bold text-[#1F4D36] uppercase">{comm.referenceNumber}</td>
+                      <div className="flex items-center gap-2">
+                        {comm.status === 'Received' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Received
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> Pending
+                          </span>
+                        )}
 
-                          <td className="py-3.5 px-6 text-[#475569]">
-                            {comm.invoiceNumber && <span className="block font-semibold">Inv: {comm.invoiceNumber}</span>}
-                            {comm.orderNumber && <span className="block text-[11px] text-[#64748B]">Ord: {comm.orderNumber}</span>}
-                            {!comm.invoiceNumber && !comm.orderNumber && <span className="text-slate-400">—</span>}
-                          </td>
+                        <span className="text-[11px] font-bold text-[#64748B]">
+                          {new Date(comm.commissionDate).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </div>
+                    </div>
 
-                          <td className="py-3.5 px-6 text-[#334155] font-medium max-w-[220px] truncate">
-                            {comm.description}
-                            {comm.notes && (
-                              <span className="block font-normal text-[11px] text-[#64748B] truncate">{comm.notes}</span>
-                            )}
-                          </td>
+                    {/* Card Content & Tags */}
+                    <div className="space-y-2 py-1">
+                      <h4 className="font-sans text-sm font-bold text-[#1F4D36] line-clamp-2 leading-snug">
+                        {comm.description}
+                      </h4>
 
-                          <td className="py-3.5 px-6 font-bold text-emerald-800">{formatIndianCurrency(comm.amount)}</td>
+                      <div className="flex flex-wrap gap-1.5">
+                        {comm.invoiceNumber && (
+                          <span className="text-[10px] font-bold text-[#1F4D36] bg-[#FAF3E8] px-2 py-0.5 rounded-md border border-[#1F4D36]/15">
+                            Inv: {comm.invoiceNumber}
+                          </span>
+                        )}
+                        {comm.orderNumber && (
+                          <span className="text-[10px] font-bold text-[#475569] bg-slate-100 px-2 py-0.5 rounded-md">
+                            Ord: {comm.orderNumber}
+                          </span>
+                        )}
+                      </div>
 
-                          <td className="py-3.5 px-6">
-                            {comm.status === 'Received' ? (
-                              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3" /> Received
-                              </span>
-                            ) : (
-                              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> Pending
-                              </span>
-                            )}
-                          </td>
+                      {/* Financial Tally Grid Box */}
+                      <div className="mt-3 p-3 rounded-xl bg-[#FAF3E8]/40 border border-[#1F4D36]/15 grid grid-cols-3 gap-2 text-center">
+                        <div>
+                          <span className="block font-sans text-[9px] uppercase font-bold text-[#64748B]">Commission</span>
+                          <span className="font-sans text-sm font-extrabold text-emerald-800 block">
+                            {formatIndianCurrency(comm.amount)}
+                          </span>
+                        </div>
 
-                          <td className="py-3.5 px-6 font-semibold text-red-700">
+                        <div>
+                          <span className="block font-sans text-[9px] uppercase font-bold text-[#64748B]">Expenses</span>
+                          <span className="font-sans text-sm font-extrabold text-red-700 block">
                             {linkedSum > 0 ? formatIndianCurrency(linkedSum) : '₹0'}
-                          </td>
+                          </span>
+                        </div>
 
-                          <td className="py-3.5 px-6 font-bold">
-                            {comm.status === 'Received' ? (
-                              <span className={remBalance < 0 ? 'text-red-600' : 'text-[#1F4D36]'}>
-                                {formatIndianCurrency(remBalance)}
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 font-normal">Pending</span>
-                            )}
-                          </td>
+                        <div className="bg-white p-1 rounded-lg border border-[#1F4D36]/15">
+                          <span className="block font-sans text-[9px] uppercase font-bold text-[#1F4D36]">Cash Balance</span>
+                          <span className={`font-sans text-sm font-extrabold block ${remBalance < 0 ? 'text-red-600' : 'text-[#1F4D36]'}`}>
+                            {comm.status === 'Received' ? formatIndianCurrency(remBalance) : 'Pending'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                          <td className="py-3.5 px-6 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => openEditCommModal(comm)}
-                                className="p-2 rounded-lg text-[#1F4D36] bg-[#FAF3E8] hover:bg-[#F5E6C8] transition-colors"
-                                title="Edit Commission"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => setDeletingCommission(comm)}
-                                className="p-2 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
-                                title="Delete Commission"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                    {/* Card Actions Footer */}
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <span className="text-[11px] text-[#64748B]">
+                        {comm.receivedDate ? `Received: ${new Date(comm.receivedDate).toLocaleDateString('en-IN')}` : 'Status: Pending'}
+                      </span>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => openEditCommModal(comm)}
+                          className="p-2 rounded-xl text-[#1F4D36] bg-[#FAF3E8] hover:bg-[#F5E6C8] transition-colors"
+                          title="Edit Commission"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingCommission(comm)}
+                          className="p-2 rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                          title="Delete Commission"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── TAB 3: COMMISSION & EXPENSE LINKING SUMMARY ────────────────────── */}
+      {/* ── TAB 3: COMMISSION & EXPENSE LINKING SUMMARY (CARDS LAYOUT) ──────── */}
       {activeTab === 'summary' && (
         <div className="space-y-6">
           <div className="p-6 rounded-[24px] bg-white border border-[#1F4D36]/15 shadow-sm space-y-4">
             <h3 className="font-serif text-xl font-bold text-[#1F4D36] border-b border-slate-100 pb-3">
-              Commission vs Linked Expenses Breakdown
+              Commission & Linked Expenses Cash Flow Cards
             </h3>
 
             {commissions.length === 0 ? (
@@ -802,14 +832,14 @@ export default function AdminExpenses() {
                   const remBal = comm.status === 'Received' ? comm.amount - totalSpent : 0;
 
                   return (
-                    <div key={commId} className="p-5 rounded-2xl bg-[#FAF3E8]/40 border border-[#1F4D36]/15 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1F4D36]/10 pb-3">
+                    <div key={commId} className="p-5 rounded-2xl bg-[#FAF3E8]/40 border border-[#1F4D36]/15 space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1F4D36]/10 pb-3">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-sans text-xs font-bold text-white bg-[#1F4D36] px-2.5 py-0.5 rounded-md uppercase tracking-wider">
+                            <span className="font-sans text-xs font-extrabold text-white bg-[#1F4D36] px-2.5 py-0.5 rounded-md uppercase tracking-wider">
                               {comm.referenceNumber}
                             </span>
-                            <span className="font-serif text-lg font-bold text-[#1F4D36]">{comm.description}</span>
+                            <span className="font-sans text-base font-bold text-[#1F4D36]">{comm.description}</span>
                           </div>
                           <p className="font-sans text-xs text-[#64748B] mt-0.5">
                             Date: {new Date(comm.commissionDate).toLocaleDateString('en-IN')}
@@ -818,40 +848,40 @@ export default function AdminExpenses() {
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                           <div className="text-right">
                             <span className="block font-sans text-[10px] text-[#64748B] uppercase font-bold">Commission</span>
-                            <span className="font-serif text-lg font-bold text-emerald-800">{formatIndianCurrency(comm.amount)}</span>
+                            <span className="font-sans text-base font-extrabold text-emerald-800">{formatIndianCurrency(comm.amount)}</span>
                           </div>
 
                           <div className="text-right">
                             <span className="block font-sans text-[10px] text-[#64748B] uppercase font-bold">Expenses Spent</span>
-                            <span className="font-serif text-lg font-bold text-red-700">{formatIndianCurrency(totalSpent)}</span>
+                            <span className="font-sans text-base font-extrabold text-red-700">{formatIndianCurrency(totalSpent)}</span>
                           </div>
 
-                          <div className="text-right bg-white px-3.5 py-1.5 rounded-xl border border-[#1F4D36]/15">
-                            <span className="block font-sans text-[10px] text-[#64748B] uppercase font-bold">Remaining Balance</span>
-                            <span className={`font-serif text-lg font-bold ${remBal < 0 ? 'text-red-600' : 'text-[#1F4D36]'}`}>
+                          <div className="text-right bg-white px-3.5 py-1.5 rounded-xl border border-[#1F4D36]/20 shadow-xs">
+                            <span className="block font-sans text-[10px] text-[#1F4D36] uppercase font-extrabold">Cash in Hand</span>
+                            <span className={`font-sans text-base font-extrabold ${remBal < 0 ? 'text-red-600' : 'text-[#1F4D36]'}`}>
                               {comm.status === 'Received' ? formatIndianCurrency(remBal) : 'Pending'}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Linked Expenses Sub-List */}
+                      {/* Linked Expenses Sub-Cards */}
                       {linkedExps.length > 0 ? (
-                        <div className="space-y-1.5 pl-3 border-l-2 border-[#1F4D36]/20">
-                          <span className="font-sans text-[11px] font-bold text-[#1F4D36] uppercase tracking-wider block">
-                            Linked Expense Details ({linkedExps.length}):
+                        <div className="space-y-2">
+                          <span className="font-sans text-xs font-bold text-[#1F4D36] uppercase tracking-wider block">
+                            Linked Expenses ({linkedExps.length}):
                           </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             {linkedExps.map((e) => (
-                              <div key={e._id || e.id} className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs flex justify-between items-center">
+                              <div key={e._id || e.id} className="p-3 rounded-xl bg-white border border-slate-200 text-xs flex justify-between items-center shadow-2xs">
                                 <div>
                                   <span className="font-bold text-[#1F4D36] block">{e.category}</span>
                                   <span className="text-[#64748B] text-[11px] block truncate max-w-[150px]">{e.description}</span>
                                 </div>
-                                <span className="font-bold text-red-700 shrink-0">{formatIndianCurrency(e.amount)}</span>
+                                <span className="font-sans font-extrabold text-red-700 shrink-0">{formatIndianCurrency(e.amount)}</span>
                               </div>
                             ))}
                           </div>
