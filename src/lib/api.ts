@@ -5,6 +5,8 @@ import type {
   Order,
   Payment,
   Expense,
+  Commission,
+  CommissionSummary,
   BusinessSettings,
   DashboardStats,
 } from '@/types';
@@ -499,12 +501,14 @@ export async function fetchExpenses(params?: {
   search?: string;
   startDate?: string;
   endDate?: string;
+  commissionId?: string;
 }): Promise<Expense[]> {
   const query = new URLSearchParams();
   if (params?.category) query.append('category', params.category);
   if (params?.search) query.append('search', params.search);
   if (params?.startDate) query.append('startDate', params.startDate);
   if (params?.endDate) query.append('endDate', params.endDate);
+  if (params?.commissionId) query.append('commissionId', params.commissionId);
 
   const res = await fetch(`${API_BASE_URL}/api/expenses?${query.toString()}`, {
     headers: getAuthHeader(),
@@ -543,6 +547,67 @@ export async function deleteExpense(id: string): Promise<void> {
   if (!res.ok) {
     const data = await res.json();
     throw new Error(data.message || 'Failed to delete expense');
+  }
+}
+
+// COMMISSIONS API SERVICES
+export async function fetchCommissions(params?: {
+  status?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}): Promise<Commission[]> {
+  const query = new URLSearchParams();
+  if (params?.status) query.append('status', params.status);
+  if (params?.search) query.append('search', params.search);
+  if (params?.startDate) query.append('startDate', params.startDate);
+  if (params?.endDate) query.append('endDate', params.endDate);
+
+  const res = await fetch(`${API_BASE_URL}/api/commissions?${query.toString()}`, {
+    headers: getAuthHeader(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch commissions');
+  return await res.json();
+}
+
+export async function fetchCommissionSummary(): Promise<CommissionSummary> {
+  const res = await fetch(`${API_BASE_URL}/api/commissions/summary`, {
+    headers: getAuthHeader(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch commission summary');
+  return await res.json();
+}
+
+export async function createCommission(commissionData: Partial<Commission>): Promise<Commission> {
+  const res = await fetch(`${API_BASE_URL}/api/commissions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(commissionData),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to add commission');
+  return data;
+}
+
+export async function updateCommission(id: string, updates: Partial<Commission>): Promise<Commission> {
+  const res = await fetch(`${API_BASE_URL}/api/commissions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(updates),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to update commission');
+  return data;
+}
+
+export async function deleteCommission(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/api/commissions/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeader(),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.message || 'Failed to delete commission');
   }
 }
 

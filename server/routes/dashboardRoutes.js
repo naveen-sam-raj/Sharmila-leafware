@@ -2,6 +2,7 @@ import express from 'express';
 import Order from '../models/Order.js';
 import Payment from '../models/Payment.js';
 import Expense from '../models/Expense.js';
+import Commission from '../models/Commission.js';
 import { isMongoConnected, getFallbackData } from '../config/db.js';
 import { protect } from '../middleware/auth.js';
 
@@ -131,6 +132,17 @@ router.get('/stats', protect, async (req, res) => {
           amount: salesMap[date],
         }));
 
+      // 4. Fetch Commissions
+      const commissions = await Commission.find({});
+
+      let totalCommission = 0;
+      let pendingCommission = 0;
+      commissions.forEach((c) => {
+        if (c.status === 'Received') totalCommission += c.amount || 0;
+        else if (c.status === 'Pending') pendingCommission += c.amount || 0;
+      });
+      const availableCommission = totalCommission - totalExpenses;
+
       return res.json({
         range,
         totalOrders,
@@ -138,6 +150,9 @@ router.get('/stats', protect, async (req, res) => {
         totalPaid,
         totalPending,
         totalExpenses,
+        totalCommission,
+        pendingCommission,
+        availableCommission,
         netAmount,
         recentOrders,
         recentPayments,
@@ -149,6 +164,7 @@ router.get('/stats', protect, async (req, res) => {
       const ordersList = fallback.orders || [];
       const paymentsList = fallback.payments || [];
       const expensesList = fallback.expenses || [];
+      const commissionsList = fallback.commissions || [];
 
       const filteredOrders = ordersList.filter((o) => {
         if (o.orderStatus === 'CANCELLED') return false;
@@ -172,6 +188,14 @@ router.get('/stats', protect, async (req, res) => {
       const totalPending = filteredOrders.reduce((sum, o) => sum + (o.balanceAmount || 0), 0);
       const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
       const netAmount = totalPaid - totalExpenses;
+
+      let totalCommission = 0;
+      let pendingCommission = 0;
+      commissionsList.forEach((c) => {
+        if (c.status === 'Received') totalCommission += c.amount || 0;
+        else if (c.status === 'Pending') pendingCommission += c.amount || 0;
+      });
+      const availableCommission = totalCommission - totalExpenses;
 
       filteredOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       filteredPayments.sort((a, b) => new Date(b.paymentDate || b.createdAt).getTime() - new Date(a.paymentDate || a.createdAt).getTime());
@@ -205,6 +229,9 @@ router.get('/stats', protect, async (req, res) => {
         totalPaid,
         totalPending,
         totalExpenses,
+        totalCommission,
+        pendingCommission,
+        availableCommission,
         netAmount,
         recentOrders: filteredOrders.slice(0, 10),
         recentPayments: filteredPayments.slice(0, 10),

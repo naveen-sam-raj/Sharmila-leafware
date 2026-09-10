@@ -35,6 +35,7 @@ let fallbackData = {
   orders: [],
   payments: [],
   expenses: [],
+  commissions: [],
   settings: null,
 };
 

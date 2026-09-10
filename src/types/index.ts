@@ -142,6 +142,11 @@ export type ExpenseCategoryEnum =
   | 'Electricity'
   | 'Marketing'
   | 'Office'
+  | 'Fuel'
+  | 'Food'
+  | 'Delivery'
+  | 'Phone / Internet'
+  | 'Travel'
   | 'Other';
 
 export interface Expense {
@@ -152,9 +157,38 @@ export interface Expense {
   description: string;
   amount: number;
   paymentMethod: 'Cash' | 'UPI' | 'Bank Transfer' | 'Card' | 'Other';
+  commissionId?: string | null;
+  commissionRef?: string;
   notes?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export type CommissionStatusEnum = 'Received' | 'Pending';
+
+export interface Commission {
+  _id?: string;
+  id?: string;
+  referenceNumber: string;
+  commissionDate: string;
+  invoiceNumber?: string;
+  orderNumber?: string;
+  description: string;
+  amount: number;
+  status: CommissionStatusEnum;
+  receivedDate?: string;
+  notes?: string;
+  linkedExpensesSum?: number;
+  remainingBalance?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CommissionSummary {
+  totalReceivedCommission: number;
+  totalPendingCommission: number;
+  totalExpenses: number;
+  availableCommission: number;
 }
 
 export interface BusinessSettings {
@@ -187,6 +221,9 @@ export interface DashboardStats {
   totalPaid: number;
   totalPending: number;
   totalExpenses: number;
+  totalCommission?: number;
+  pendingCommission?: number;
+  availableCommission?: number;
   netAmount: number;
   recentOrders: Order[];
   recentPayments: Payment[];

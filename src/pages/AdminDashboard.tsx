@@ -15,22 +15,27 @@ import {
   Sparkles,
   Layers,
 } from 'lucide-react';
-import { fetchProducts, fetchCategories, fetchGallery } from '@/lib/api';
+import { fetchProducts, fetchCategories, fetchGallery, fetchDashboardStats } from '@/lib/api';
+import { formatIndianCurrency } from '@/lib/numberToWords';
+import type { DashboardStats } from '@/types';
+import { DollarSign, Wallet, Clock, ArrowUpRight } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [productCount, setProductCount] = useState<number>(0);
   const [categoryCount, setCategoryCount] = useState<number>(0);
   const [galleryCount, setGalleryCount] = useState<number>(0);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function loadDashboardCounts() {
       setLoading(true);
       try {
-        const [prodRes, catRes, galRes] = await Promise.allSettled([
+        const [prodRes, catRes, galRes, statsRes] = await Promise.allSettled([
           fetchProducts({ includeInactive: true, limit: 1 }),
           fetchCategories(true),
           fetchGallery({ includeInactive: true }),
+          fetchDashboardStats('all'),
         ]);
 
         if (prodRes.status === 'fulfilled') {
@@ -41,6 +46,9 @@ export default function AdminDashboard() {
         }
         if (galRes.status === 'fulfilled') {
           setGalleryCount(galRes.value?.length ?? 0);
+        }
+        if (statsRes.status === 'fulfilled') {
+          setStats(statsRes.value);
         }
       } catch (err) {
         console.warn('Error loading module counts:', err);
@@ -168,7 +176,84 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Main Module Cards Grid */}
+      {/* Internal Financial Summary Cards */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[#1F4D36]">
+            <Wallet className="w-4 h-4 text-[#C8A45D]" />
+            <h2 className="font-serif text-lg font-bold">Financial & Commission Summary</h2>
+          </div>
+          <Link
+            to="/admin/expenses"
+            className="text-xs font-sans font-semibold text-[#1F4D36] hover:text-[#C8A45D] flex items-center gap-1 transition-colors"
+          >
+            <span>Manage Commissions & Expenses</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                <DollarSign className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full">
+                Received
+              </span>
+            </div>
+            <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Total Commission</h3>
+            <p className="font-serif text-2xl sm:text-3xl font-bold text-emerald-800 mt-1">
+              {loading ? '...' : formatIndianCurrency(stats?.totalCommission || 0)}
+            </p>
+          </div>
+
+          <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
+                <TrendingDown className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-red-800 bg-red-50 px-2.5 py-1 rounded-full">
+                Outflow
+              </span>
+            </div>
+            <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Total Expenses</h3>
+            <p className="font-serif text-2xl sm:text-3xl font-bold text-red-700 mt-1">
+              {loading ? '...' : formatIndianCurrency(stats?.totalExpenses || 0)}
+            </p>
+          </div>
+
+          <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FAF3E8] text-[#1F4D36] flex items-center justify-center">
+                <Wallet className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F4D36] bg-[#FAF3E8] px-2.5 py-1 rounded-full">
+                Balance
+              </span>
+            </div>
+            <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Available Commission</h3>
+            <p className="font-serif text-2xl sm:text-3xl font-bold text-[#1F4D36] mt-1">
+              {loading ? '...' : formatIndianCurrency(stats?.availableCommission || 0)}
+            </p>
+          </div>
+
+          <div className="p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                <Clock className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full">
+                Pending
+              </span>
+            </div>
+            <h3 className="font-sans text-xs font-medium text-[#64748B] uppercase">Pending Commission</h3>
+            <p className="font-serif text-2xl sm:text-3xl font-bold text-amber-800 mt-1">
+              {loading ? '...' : formatIndianCurrency(stats?.pendingCommission || 0)}
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {MODULES.map((mod, idx) => {
           const Icon = mod.icon;

@@ -1,15 +1,33 @@
 import express from 'express';
 import Expense from '../models/Expense.js';
+import Commission from '../models/Commission.js';
 import { isMongoConnected, getFallbackData, saveFallbackStorage } from '../config/db.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
+const VALID_CATEGORIES = [
+  'Transport',
+  'Courier',
+  'Packaging',
+  'Raw Materials',
+  'Labour',
+  'Electricity',
+  'Marketing',
+  'Office',
+  'Fuel',
+  'Food',
+  'Delivery',
+  'Phone / Internet',
+  'Travel',
+  'Other',
+];
+
 // @route   GET /api/expenses
-// @desc    Get expense records with category filter, search, date range
+// @desc    Get expense records with category filter, search, date range, commission filter
 router.get('/', protect, async (req, res) => {
   try {
-    const { category, search, startDate, endDate } = req.query;
+    const { category, search, startDate, endDate, commissionId } = req.query;
 
     if (isMongoConnected) {
       let filter = {};
@@ -18,9 +36,13 @@ router.get('/', protect, async (req, res) => {
         filter.category = category;
       }
 
+      if (commissionId && commissionId !== 'all') {
+        filter.commissionId = commissionId;
+      }
+
       if (search && search.trim()) {
         const regex = new RegExp(search.trim(), 'i');
-        filter.$or = [{ description: regex }, { notes: regex }];
+        filter.$or = [{ description: regex }, { notes: regex }, { commissionRef: regex }];
       }
 
       if (startDate || endDate) {
@@ -43,12 +65,17 @@ router.get('/', protect, async (req, res) => {
         list = list.filter((e) => e.category === category);
       }
 
+      if (commissionId && commissionId !== 'all') {
+        list = list.filter((e) => e.commissionId === commissionId || e.commissionRef === commissionId);
+      }
+
       if (search && search.trim()) {
         const q = search.trim().toLowerCase();
         list = list.filter(
           (e) =>
             e.description.toLowerCase().includes(q) ||
-            (e.notes && e.notes.toLowerCase().includes(q))
+            (e.notes && e.notes.toLowerCase().includes(q)) ||
+            (e.commissionRef && e.commissionRef.toLowerCase().includes(q))
         );
       }
 
@@ -78,7 +105,16 @@ router.get('/', protect, async (req, res) => {
 // @desc    Add new expense record
 router.post('/', protect, async (req, res) => {
   try {
-    const { expenseDate, category, description, amount, paymentMethod = 'Cash', notes } = req.body;
+    const {
+      expenseDate,
+      category,
+      description,
+      amount,
+      paymentMethod = 'Cash',
+      commissionId,
+      commissionRef,
+      notes,
+    } = req.body;
 
     if (!description || !description.trim()) {
       return res.status(400).json({ message: 'Description is required' });
@@ -88,33 +124,40 @@ router.post('/', protect, async (req, res) => {
       return res.status(400).json({ message: 'Expense amount must be greater than zero' });
     }
 
-    const validCategories = [
-      'Transport',
-      'Courier',
-      'Packaging',
-      'Raw Materials',
-      'Labour',
-      'Electricity',
-      'Marketing',
-      'Office',
-      'Other',
-    ];
-
-    const expCat = validCategories.includes(category) ? category : 'Other';
+    const expCat = VALID_CATEGORIES.includes(category) ? category : 'Other';
 
     if (isMongoConnected) {
+      let commObjId = null;
+      let commRefStr = commissionRef ? commissionRef.trim() : '';
+
+      if (commissionId) {
+        commObjId = commissionId;
+        if (!commRefStr) {
+          const comm = await Commission.findById(commissionId);
+          if (comm) commRefStr = comm.referenceNumber;
+        }
+      }
+
       const expense = await Expense.create({
         expenseDate: expenseDate ? new Date(expenseDate) : new Date(),
         category: expCat,
         description: description.trim(),
         amount: numAmount,
         paymentMethod,
+        commissionId: commObjId,
+        commissionRef: commRefStr,
         notes: notes ? notes.trim() : '',
       });
       return res.status(201).json(expense);
     } else {
       const fallback = getFallbackData();
       if (!fallback.expenses) fallback.expenses = [];
+
+      let commRefStr = commissionRef ? commissionRef.trim() : '';
+      if (commissionId && !commRefStr && fallback.commissions) {
+        const comm = fallback.commissions.find((c) => c._id === commissionId || c.id === commissionId);
+        if (comm) commRefStr = comm.referenceNumber;
+      }
 
       const expense = {
         _id: 'exp_' + Date.now(),
@@ -123,6 +166,8 @@ router.post('/', protect, async (req, res) => {
         description: description.trim(),
         amount: numAmount,
         paymentMethod,
+        commissionId: commissionId || null,
+        commissionRef: commRefStr,
         notes: notes ? notes.trim() : '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -143,9 +188,24 @@ router.post('/', protect, async (req, res) => {
 router.put('/:id', protect, async (req, res) => {
   try {
     const { id } = req.params;
-    const { expenseDate, category, description, amount, paymentMethod, notes } = req.body;
+    const {
+      expenseDate,
+      category,
+      description,
+      amount,
+      paymentMethod,
+      commissionId,
+      commissionRef,
+      notes,
+    } = req.body;
 
     if (isMongoConnected) {
+      let commRefStr = commissionRef !== undefined ? commissionRef.trim() : undefined;
+      if (commissionId && commRefStr === undefined) {
+        const comm = await Commission.findById(commissionId);
+        if (comm) commRefStr = comm.referenceNumber;
+      }
+
       const updated = await Expense.findByIdAndUpdate(
         id,
         {
@@ -154,6 +214,8 @@ router.put('/:id', protect, async (req, res) => {
           ...(description && { description: description.trim() }),
           ...(amount !== undefined && { amount: Number(amount) }),
           ...(paymentMethod && { paymentMethod }),
+          ...(commissionId !== undefined && { commissionId: commissionId || null }),
+          ...(commRefStr !== undefined && { commissionRef: commRefStr }),
           ...(notes !== undefined && { notes: notes.trim() }),
         },
         { new: true }
@@ -165,6 +227,12 @@ router.put('/:id', protect, async (req, res) => {
       const idx = fallback.expenses.findIndex((e) => e._id === id || e.id === id);
       if (idx === -1) return res.status(404).json({ message: 'Expense record not found' });
 
+      let commRefStr = commissionRef !== undefined ? commissionRef.trim() : undefined;
+      if (commissionId && commRefStr === undefined && fallback.commissions) {
+        const comm = fallback.commissions.find((c) => c._id === commissionId || c.id === commissionId);
+        if (comm) commRefStr = comm.referenceNumber;
+      }
+
       fallback.expenses[idx] = {
         ...fallback.expenses[idx],
         ...(expenseDate && { expenseDate: new Date(expenseDate).toISOString() }),
@@ -172,6 +240,8 @@ router.put('/:id', protect, async (req, res) => {
         ...(description && { description: description.trim() }),
         ...(amount !== undefined && { amount: Number(amount) }),
         ...(paymentMethod && { paymentMethod }),
+        ...(commissionId !== undefined && { commissionId: commissionId || null }),
+        ...(commRefStr !== undefined && { commissionRef: commRefStr }),
         ...(notes !== undefined && { notes: notes.trim() }),
         updatedAt: new Date().toISOString(),
       };
