@@ -27,7 +27,7 @@ export default function About() {
         />
 
         {/* Value cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mt-10 sm:mt-16">
           {VALUES.map((value, i) => (
             <motion.div
               key={value.title}
@@ -35,13 +35,13 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: i * 0.06 }}
-              className="group relative p-6 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#C8A45D] hover:shadow-xl hover:-translate-y-1.5 transition-all duration-400"
+              className="group relative p-3.5 sm:p-6 rounded-[16px] sm:rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#C8A45D] hover:shadow-xl hover:-translate-y-1.5 transition-all duration-400"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#F5E6C8]/60 border border-[#1F4D36]/20 flex items-center justify-center mb-4 group-hover:bg-[#1F4D36] group-hover:text-white transition-all duration-300">
-                <value.icon className="w-6 h-6 text-[#1F4D36] group-hover:text-[#C8A45D] transition-colors" strokeWidth={1.75} />
+              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[#F5E6C8]/60 border border-[#1F4D36]/20 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-[#1F4D36] group-hover:text-white transition-all duration-300">
+                <value.icon className="w-4 h-4 sm:w-6 sm:h-6 text-[#1F4D36] group-hover:text-[#C8A45D] transition-colors" strokeWidth={1.75} />
               </div>
-              <h3 className="font-serif text-xl text-[#1F4D36] mb-2 font-medium">{value.title}</h3>
-              <p className="font-sans text-sm font-light text-[#475569] leading-relaxed">{value.desc}</p>
+              <h3 className="font-serif text-sm sm:text-xl text-[#1F4D36] mb-1 sm:mb-2 font-medium leading-snug">{value.title}</h3>
+              <p className="font-sans text-xs sm:text-sm font-light text-[#475569] leading-relaxed">{value.desc}</p>
             </motion.div>
           ))}
         </div>

@@ -27,7 +27,7 @@ export default function WhySharmila() {
           subtitle="Nine reasons why international buyers choose Sharmila Leafware as their trusted manufacturing partner."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mt-10 sm:mt-16">
           {FEATURES.map((feature, i) => (
             <motion.div
               key={feature.title}
@@ -35,18 +35,18 @@ export default function WhySharmila() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="group relative p-8 rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#C8A45D] hover:shadow-xl hover:-translate-y-2 transition-all duration-400"
+              className="group relative p-3.5 sm:p-8 rounded-[16px] sm:rounded-[20px] bg-white border border-[#1F4D36]/15 shadow-sm hover:border-[#C8A45D] hover:shadow-xl hover:-translate-y-2 transition-all duration-400"
             >
               {/* Number Accent */}
-              <span className="absolute top-6 right-6 font-serif text-3xl font-bold text-[#C8A45D]/40 group-hover:text-[#C8A45D] transition-colors">
+              <span className="absolute top-3 right-3 sm:top-6 sm:right-6 font-serif text-base sm:text-3xl font-bold text-[#C8A45D]/40 group-hover:text-[#C8A45D] transition-colors">
                 {String(i + 1).padStart(2, '0')}
               </span>
 
-              <div className="w-14 h-14 rounded-2xl bg-[#FAF3E8] border border-[#1F4D36]/20 flex items-center justify-center mb-5 group-hover:bg-[#1F4D36] group-hover:border-[#1F4D36] transition-all duration-300">
-                <feature.icon className="w-7 h-7 text-[#1F4D36] group-hover:text-[#C8A45D] transition-colors" strokeWidth={1.6} />
+              <div className="w-9 h-9 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#FAF3E8] border border-[#1F4D36]/20 flex items-center justify-center mb-3 sm:mb-5 group-hover:bg-[#1F4D36] group-hover:border-[#1F4D36] transition-all duration-300">
+                <feature.icon className="w-4 h-4 sm:w-7 sm:h-7 text-[#1F4D36] group-hover:text-[#C8A45D] transition-colors" strokeWidth={1.6} />
               </div>
-              <h3 className="font-serif text-2xl text-[#1F4D36] mb-2 font-medium">{feature.title}</h3>
-              <p className="font-sans text-sm font-light text-[#475569] leading-relaxed">{feature.desc}</p>
+              <h3 className="font-serif text-sm sm:text-2xl text-[#1F4D36] mb-1 sm:mb-2 font-medium leading-snug">{feature.title}</h3>
+              <p className="font-sans text-xs sm:text-sm font-light text-[#475569] leading-relaxed">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
