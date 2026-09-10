@@ -20,6 +20,9 @@ const getApiBaseUrl = (): string => {
     return envUrl.trim().replace(/\/$/, '');
   }
   if (import.meta.env.DEV) {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return `http://${window.location.hostname}:5000`;
+    }
     return 'http://localhost:5000';
   }
   return '';
@@ -32,7 +35,10 @@ export async function safeParseJson(res: Response): Promise<any> {
   if (!contentType.includes('application/json')) {
     const text = await res.text();
     if (text.trim().startsWith('<')) {
-      throw new Error(`API request returned non-JSON response (${res.status}). Verify API proxy configuration.`);
+      if (res.status === 413) {
+        throw new Error('Image file is too large to upload. Please choose a smaller photo or retry.');
+      }
+      throw new Error(`API request returned non-JSON response (${res.status}). Verify API server & network connection.`);
     }
     try {
       return JSON.parse(text);
@@ -41,6 +47,72 @@ export async function safeParseJson(res: Response): Promise<any> {
     }
   }
   return await res.json();
+}
+
+/**
+ * Client-side Canvas Image Compression
+ * Automatically resizes & compresses high-resolution mobile camera photos before upload.
+ */
+export async function compressImageFile(
+  file: File,
+  maxWidth = 1600,
+  maxHeight = 1600,
+  quality = 0.85
+): Promise<File> {
+  if (!file.type.startsWith('image/') || file.type.includes('svg')) {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob || blob.size >= file.size) {
+              resolve(file);
+            } else {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '') + '.jpg', {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
 }
 
 // Fetch categories
@@ -289,8 +361,11 @@ export async function deleteGalleryItem(id: string): Promise<void> {
 
 // Upload & Cloudinary
 export async function uploadImageToCloudinary(file: File): Promise<{ url: string; public_id: string }> {
+  // Compress high-res mobile camera photos client-side before sending to server
+  const fileToUpload = await compressImageFile(file);
+
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append('image', fileToUpload);
 
   const res = await fetch(`${API_BASE_URL}/api/upload`, {
     method: 'POST',

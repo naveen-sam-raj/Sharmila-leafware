@@ -10,11 +10,11 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB max file size
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
-    if (allowedTypes.includes(file.mimetype)) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/heic', 'image/heif'];
+    if (allowedTypes.includes(file.mimetype) || file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'));
@@ -28,7 +28,7 @@ router.post('/', protect, (req, res) => {
   upload.single('image')(req, res, async (err) => {
     if (err instanceof multer.MulterError) {
       if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ message: 'File size exceeds maximum limit of 5MB.' });
+        return res.status(400).json({ message: 'File size exceeds maximum limit of 50MB.' });
       }
       return res.status(400).json({ message: err.message });
     } else if (err) {
