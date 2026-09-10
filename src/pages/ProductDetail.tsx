@@ -110,11 +110,10 @@ function ProductImageViewer({ product }: { product: Product }) {
   };
 
   return (
-    <div className="space-y-4 select-none">
+    <div className="space-y-4 select-none max-w-md mx-auto lg:max-w-none">
       {/* Main Stage */}
       <div
-        className={`relative rounded-[28px] overflow-hidden bg-gradient-to-br from-[#FAF3E8] via-[#FFFDF9] to-[#F5E6C8] border border-[#C8A45D]/40 shadow-[0_15px_45px_rgba(31,77,54,0.1)] cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
-        style={{ aspectRatio: '1 / 1' }}
+        className={`relative rounded-[28px] overflow-hidden bg-[#FAF3E8] border border-[#C8A45D]/40 shadow-lg cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
         onMouseDown={(e) => handleDragStart(e.clientX)}
         onMouseMove={(e) => handleDragMove(e.clientX)}
         onMouseUp={handleDragEnd}
@@ -123,11 +122,6 @@ function ProductImageViewer({ product }: { product: Product }) {
         onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e)}
         onTouchEnd={handleDragEnd}
       >
-        {/* Subtle texture overlay */}
-        <div className="absolute inset-0 opacity-25" style={{
-          backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(200,164,93,0.35) 0%, transparent 60%)',
-        }} />
-
         {/* 360 Badge */}
         {views.length > 1 && (
           <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E291C]/85 backdrop-blur-md border border-[#C8A45D]/40 shadow-sm text-[#F5C842]">
@@ -145,20 +139,22 @@ function ProductImageViewer({ product }: { product: Product }) {
           <ZoomIn className="w-4 h-4" />
         </button>
 
-        {/* Image */}
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={activeIndex}
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: isDragging ? 1.04 : 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            src={activeView?.url || mainImg}
-            alt={`${product.name} — ${activeView?.label || 'View'}`}
-            className="w-full h-full object-contain p-6 transition-transform duration-500 md:hover:scale-[1.03]"
-            draggable={false}
-          />
-        </AnimatePresence>
+        {/* Image Container - Zero white padding & curved corners */}
+        <div className="w-full aspect-square max-h-[460px] overflow-hidden rounded-[28px] bg-slate-900/5">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={activeIndex}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: isDragging ? 1.04 : 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              src={activeView?.url || mainImg}
+              alt={`${product.name} — ${activeView?.label || 'View'}`}
+              className="w-full h-full object-cover rounded-[28px] transition-transform duration-500 md:hover:scale-[1.03]"
+              draggable={false}
+            />
+          </AnimatePresence>
+        </div>
 
         {/* Arrows */}
         {views.length > 1 && (
