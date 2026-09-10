@@ -24,7 +24,7 @@ async function getTemplateDataUrl(): Promise<string> {
 }
 
 function buildTemplateOverlayHtml(order: Order, settings: BusinessSettings, bgDataUrl: string): string {
-  const invoiceNo = order.invoiceNumber || `INV-2026-${(order.orderId || '0001').replace(/[^0-9]/g, '').padStart(4, '0')}`;
+  const invoiceNo = order.invoiceNumber || `${order.orderId || '25'}`;
   const dateStr = new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN', {
     day: '2-digit',
     month: '2-digit',
@@ -33,39 +33,44 @@ function buildTemplateOverlayHtml(order: Order, settings: BusinessSettings, bgDa
 
   // Calculate table row overlays (10 rows max)
   const itemRowsHtml: string[] = [];
-  const startY = 584; // Top Y coordinate of row 1
-  const rowHeight = 30.6; // Row height step
+  const startY = 566; // Top Y coordinate of row 1
+  const rowHeight = 28.5; // Row height step
 
   for (let i = 0; i < 10; i++) {
     const item = order.items[i];
     if (!item) break;
 
-    const currentY = startY + i * rowHeight;
+    const currentY = Math.round(startY + i * rowHeight);
     itemRowsHtml.push(`
       <!-- Row ${i + 1} Overlay -->
-      <div style="position: absolute; top: ${currentY}px; left: 98px; width: 265px; font-size: 11.5px; font-weight: 700; color: #112A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;">
+      <div style="position: absolute; top: ${currentY}px; left: 115px; width: 250px; font-size: 13px; font-weight: 700; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;">
         ${item.productName}
       </div>
-      <div style="position: absolute; top: ${currentY}px; left: 366px; width: 104px; text-align: center; font-size: 11.5px; font-weight: 600; color: #2D5E35; line-height: 1;">
+      <div style="position: absolute; top: ${currentY}px; left: 375px; width: 110px; text-align: center; font-size: 13px; font-weight: 700; color: #000000; line-height: 1;">
         ${item.size || '-'}
       </div>
-      <div style="position: absolute; top: ${currentY}px; left: 472px; width: 102px; text-align: center; font-size: 11.5px; font-weight: 800; color: #112A0E; line-height: 1;">
+      <div style="position: absolute; top: ${currentY}px; left: 495px; width: 120px; text-align: center; font-size: 13px; font-weight: 700; color: #000000; line-height: 1;">
         ${item.quantity}
       </div>
-      <div style="position: absolute; top: ${currentY}px; left: 576px; width: 154px; text-align: right; font-size: 11.5px; font-weight: 800; color: #112A0E; line-height: 1;">
+      <div style="position: absolute; top: ${currentY}px; left: 655px; width: 80px; text-align: left; font-size: 13px; font-weight: 700; color: #000000; line-height: 1;">
         ${item.total.toLocaleString('en-IN')}
       </div>
     `);
   }
 
+  const transportCharge = order.transportCharge || 0;
+  const subtotalStr = `₹ ${order.subtotal.toLocaleString('en-IN')}`;
+  const deliveryStr = `₹ ${transportCharge.toLocaleString('en-IN')}`;
+  const grandTotalStr = `₹ ${order.grandTotal.toLocaleString('en-IN')}`;
+
   return `
     <div style="
       width: 794px;
-      height: 1192px;
+      height: 1123px;
       position: relative;
       background: #FFFFFF;
       overflow: hidden;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
       box-sizing: border-box;
     ">
       <!-- 100% Exact Template Graphic Background Image -->
@@ -74,36 +79,36 @@ function buildTemplateOverlayHtml(order: Order, settings: BusinessSettings, bgDa
         top: 0;
         left: 0;
         width: 794px;
-        height: 1192px;
+        height: 1123px;
         object-fit: fill;
         z-index: 1;
       " />
 
       <!-- Dynamic Data Overlay Layer -->
-      <div style="position: absolute; top: 0; left: 0; width: 794px; height: 1192px; z-index: 2; pointer-events: none;">
+      <div style="position: absolute; top: 0; left: 0; width: 794px; height: 1123px; z-index: 2; pointer-events: none;">
 
         <!-- 1. TOP RIGHT INVOICE DETAILS OVERLAY -->
-        <div style="position: absolute; top: 215px; left: 582px; width: 145px; font-size: 12px; font-weight: 700; color: #112A0E; white-space: nowrap;">
+        <div style="position: absolute; top: 198px; left: 595px; width: 145px; font-size: 13px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
           ${invoiceNo}
         </div>
-        <div style="position: absolute; top: 249px; left: 582px; width: 145px; font-size: 12px; font-weight: 600; color: #112A0E; white-space: nowrap;">
+        <div style="position: absolute; top: 233px; left: 595px; width: 145px; font-size: 13px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
           ${dateStr}
         </div>
-        <div style="position: absolute; top: 283px; left: 582px; width: 145px; font-size: 12px; font-weight: 700; color: #112A0E; white-space: nowrap;">
+        <div style="position: absolute; top: 268px; left: 595px; width: 145px; font-size: 13px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
           ${order.orderId}
         </div>
-        <div style="position: absolute; top: 317px; left: 582px; width: 145px; font-size: 12px; font-weight: 600; color: #112A0E; white-space: nowrap;">
+        <div style="position: absolute; top: 304px; left: 595px; width: 145px; font-size: 13px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
           ${dateStr}
         </div>
 
         <!-- 2. BILL TO CUSTOMER DETAILS OVERLAY -->
-        <div style="position: absolute; top: 397px; left: 152px; width: 520px; font-size: 12px; font-weight: 800; color: #112A0E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <div style="position: absolute; top: 378px; left: 165px; width: 500px; font-size: 13.5px; font-weight: 700; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;">
           ${order.customerName} ${order.companyName ? '(' + order.companyName + ')' : ''}
         </div>
-        <div style="position: absolute; top: 428px; left: 152px; width: 520px; font-size: 11.5px; font-weight: 600; color: #2D5E35; line-height: 1.35; max-height: 60px; overflow: hidden;">
-          ${order.address || 'Mullakkadu, Thoothukudi, Tamil Nadu, India'}
+        <div style="position: absolute; top: 412px; left: 165px; width: 500px; font-size: 13px; font-weight: 700; color: #000000; line-height: 1.35; max-height: 55px; overflow: hidden;">
+          ${order.address || 'Mullakkadu, Thoothukudi, Tamil Nadu'}
         </div>
-        <div style="position: absolute; top: 504px; left: 152px; width: 520px; font-size: 12px; font-weight: 800; color: #112A0E; white-space: nowrap;">
+        <div style="position: absolute; top: 486px; left: 165px; width: 500px; font-size: 13.5px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
           ${order.phone}
         </div>
 
@@ -111,25 +116,22 @@ function buildTemplateOverlayHtml(order: Order, settings: BusinessSettings, bgDa
         ${itemRowsHtml.join('')}
 
         <!-- 4. NOTES & BANK DETAILS OVERLAY -->
-        <div style="position: absolute; top: 962px; left: 48px; width: 320px; font-size: 10px; font-weight: 600; color: #2D5E35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-          <strong>Bank:</strong> ${settings.bankName || 'Tamilnadu Mercantile Bank'} &nbsp;|&nbsp; <strong>A/C:</strong> ${settings.accountNumber || '50200012345678'}
+        <div style="position: absolute; top: 892px; left: 45px; width: 310px; font-size: 11.5px; font-weight: 700; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;">
+          ${settings.bankName || 'Tamilnadu Mercantile Bank'} ${settings.accountNumber ? '| A/C: ' + settings.accountNumber : ''}
         </div>
-        <div style="position: absolute; top: 997px; left: 48px; width: 320px; font-size: 10px; font-weight: 600; color: #2D5E35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-          <strong>IFSC:</strong> ${settings.ifscCode || 'TMBL0000123'} &nbsp;|&nbsp; <strong>UPI:</strong> ${settings.upiId || 'sharmilaleafware@upl'}
-        </div>
-        <div style="position: absolute; top: 1032px; left: 48px; width: 320px; font-size: 10px; font-weight: 600; color: #2D5E35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-          <strong>Payment Status:</strong> ${order.paymentStatus} &nbsp;|&nbsp; <strong>Balance:</strong> ₹${order.balanceAmount.toLocaleString('en-IN')}
+        <div style="position: absolute; top: 924px; left: 45px; width: 310px; font-size: 11px; font-weight: 600; color: #333333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;">
+          Payment Status: ${order.paymentStatus} | Balance: ₹${order.balanceAmount.toLocaleString('en-IN')}
         </div>
 
         <!-- 5. TOTALS BOX OVERLAY -->
-        <div style="position: absolute; top: 965px; left: 630px; width: 102px; text-align: right; font-size: 12.5px; font-weight: 800; color: #112A0E; white-space: nowrap;">
-          ${order.subtotal.toLocaleString('en-IN')}
+        <div style="position: absolute; top: 887px; left: 600px; width: 135px; text-align: right; font-size: 13.5px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
+          ${subtotalStr}
         </div>
-        <div style="position: absolute; top: 1005px; left: 630px; width: 102px; text-align: right; font-size: 12.5px; font-weight: 800; color: #112A0E; white-space: nowrap;">
-          ${(order.transportCharge || 0).toLocaleString('en-IN')}
+        <div style="position: absolute; top: 930px; left: 600px; width: 135px; text-align: right; font-size: 13.5px; font-weight: 700; color: #000000; white-space: nowrap; line-height: 1;">
+          ${deliveryStr}
         </div>
-        <div style="position: absolute; top: 1047px; left: 630px; width: 102px; text-align: right; font-size: 14.5px; font-weight: 900; color: #FFFFFF; white-space: nowrap;">
-          ${order.grandTotal.toLocaleString('en-IN')}
+        <div style="position: absolute; top: 975px; left: 600px; width: 135px; text-align: right; font-size: 14.5px; font-weight: 800; color: #FFFFFF; white-space: nowrap; line-height: 1;">
+          ${grandTotalStr}
         </div>
 
       </div>
@@ -145,7 +147,7 @@ export async function generateInvoicePDF(order: Order, settings: BusinessSetting
   container.style.left = '-9999px';
   container.style.top = '-9999px';
   container.style.width = '794px';
-  container.style.height = '1192px';
+  container.style.height = '1123px';
   container.style.zIndex = '-9999';
 
   container.innerHTML = buildTemplateOverlayHtml(order, settings, bgDataUrl);
@@ -160,7 +162,7 @@ export async function generateInvoicePDF(order: Order, settings: BusinessSetting
     logging: false,
     backgroundColor: '#FFFFFF',
     width: 794,
-    height: 1192,
+    height: 1123,
   });
 
   document.body.removeChild(container);
