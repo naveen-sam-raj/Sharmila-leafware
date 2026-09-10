@@ -361,8 +361,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, async () => {
-  console.log(`[Sharmila Leafware Backend] Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', async () => {
+  console.log(`[Sharmila Leafware Backend] Server running on http://0.0.0.0:${PORT}`);
   await connectDB();
   await seedDatabase();
 });

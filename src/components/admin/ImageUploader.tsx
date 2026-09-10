@@ -44,16 +44,15 @@ export default function ImageUploader({
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
-      const isValidFormat = allowedMimeTypes.includes(file.type) || allowedExts.includes(fileExt);
+      const isImage = file.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|heic|heif|dng|bmp)$/i.test(file.name);
 
-      if (!isValidFormat) {
-        setError(`"${file.name}" is an unsupported format. Please upload JPG, PNG, or WebP.`);
+      if (!isImage) {
+        setError(`"${file.name}" is an unsupported format. Please upload an image file.`);
         if (fileInputRef.current) fileInputRef.current.value = '';
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        setError(`"${file.name}" exceeds 5MB maximum file size.`);
+      if (file.size > 50 * 1024 * 1024) {
+        setError(`"${file.name}" exceeds 50MB maximum file size.`);
         if (fileInputRef.current) fileInputRef.current.value = '';
         return;
       }
@@ -148,7 +147,7 @@ export default function ImageUploader({
         type="file"
         ref={fileInputRef}
         onChange={handleFileSelect}
-        accept="image/jpeg,image/png,image/webp,image/jpg"
+        accept="image/*"
         multiple={multiple}
         className="hidden"
       />
