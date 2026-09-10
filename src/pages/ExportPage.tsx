@@ -5,9 +5,22 @@ export default function ExportPage() {
   return (
     <>
       <SEO
-        title="Global Export & Bulk Supply | Areca Leaf Tableware | Sharmila Leafware India"
-        description="Sharmila Leafware is an India-based wholesale supplier of natural areca leaf tableware. Open to international bulk enquiries, importer partnerships & custom OEM private label export orders."
-        canonicalUrl="https://sharmilaleafware.com/export"
+        title="Global Areca Leaf Plates Exporter & Wholesale Supplier | Sharmila Leafware"
+        description="Sharmila Leafware exports natural areca leaf plates worldwide. Contact us for bulk wholesale orders, custom packaging, and international container shipments."
+        canonicalUrl="https://sharmilaleafware.in/export"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          '@id': 'https://sharmilaleafware.in/export#webpage',
+          'url': 'https://sharmilaleafware.in/export',
+          'name': 'Global Areca Leaf Plates Exporter & Wholesale Supplier | Sharmila Leafware',
+          'description': 'Sharmila Leafware exports natural areca leaf plates worldwide. Contact us for bulk wholesale orders, custom packaging, and international container shipments.',
+          'publisher': {
+            '@type': 'Organization',
+            'name': 'Sharmila Leafware',
+            'url': 'https://sharmilaleafware.in/'
+          }
+        }}
       />
       <div className="pt-8">
         <Export />

@@ -50,12 +50,10 @@ export default function Hero() {
         </div>
 
         {/* Main Headline (Playfair Display) */}
-        <h1 className="hero-title-1 font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-medium tracking-tight leading-[1.22] mb-2.5 sm:mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-          Crafted by Nature,
+        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-medium tracking-tight leading-[1.22] mb-6 sm:mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <span className="hero-title-1 inline-block">Crafted by Nature,&nbsp;</span>
+          <span className="hero-title-2 inline-block text-[#F5C842] font-bold">Built for Life</span>
         </h1>
-        <div className="hero-title-2 font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#F5C842] font-bold tracking-tight leading-[1.22] mb-6 sm:mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-          Built for Life
-        </div>
 
         {/* Subtitle Description */}
         <p className="hero-sub font-sans text-sm sm:text-base md:text-lg text-white/90 font-light max-w-2xl mx-auto mb-8 sm:mb-10 leading-[1.7] drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">

@@ -14,9 +14,22 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Sharmila Leafware | Premium Areca Leaf Plates Manufacturer & Exporter"
-        description="Sharmila Leafware manufactures and exports premium natural areca leaf plates, bowls, trays and eco-friendly tableware from India. 100% natural, biodegradable and chemical-free."
-        canonicalUrl="https://sharmilaleafware.com"
+        title="Sharmila Leafware | Premium Areca Leaf Plates Manufacturer & Supplier"
+        description="Sharmila Leafware manufactures and supplies natural, biodegradable areca leaf plates and eco-friendly disposable tableware for customers in India and international markets."
+        canonicalUrl="https://sharmilaleafware.in/"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          '@id': 'https://sharmilaleafware.in/#webpage',
+          'url': 'https://sharmilaleafware.in/',
+          'name': 'Sharmila Leafware | Premium Areca Leaf Plates Manufacturer & Supplier',
+          'description': 'Sharmila Leafware manufactures and supplies natural, biodegradable areca leaf plates and eco-friendly disposable tableware for customers in India and international markets.',
+          'publisher': {
+            '@type': 'Organization',
+            'name': 'Sharmila Leafware',
+            'url': 'https://sharmilaleafware.in/'
+          }
+        }}
       />
       <Hero />
       <About />
